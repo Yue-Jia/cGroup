@@ -9,7 +9,7 @@
 typedef struct runner{
     char* name;
     char gender;
-    char* country;    
+    char[3] country;    
     int bib;
     int record;
 }runnerType,*runner;
