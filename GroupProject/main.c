@@ -11,7 +11,7 @@ typedef struct runner{
     char gender;
     char* country;    
     int bib;
-    double record;
+    int record;
 }runnerType,*runner;
 
 int main() {
