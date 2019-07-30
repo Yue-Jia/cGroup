@@ -39,7 +39,7 @@ int main() {
 
     //selection_sort(arr, size);
     
-    //print_out(arr, size);
+    print(arr, size);
     //write_out(arr, size);
     
     //free_memory(arr, size);
