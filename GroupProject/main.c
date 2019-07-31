@@ -15,7 +15,9 @@ typedef struct runner{
     char gender;
     char country[4];
     int bib;
-    int ranking;
+    int time_5k;
+    int time_10k;
+    int time_15k;
     int time_official;
     struct runner* next;
     struct runner* prev;
@@ -36,7 +38,7 @@ int main() {
 
     // Read quotes from file and place them into array arr. 
     // Note: size reflects how many quotes we read from the file (between 0 and MAX_QUOTES).
-    readFile(&head, &size);
+    readFile(&head, &tail, &size);
 
     //selection_sort(arr, size);
     
@@ -77,12 +79,18 @@ void readFile(runner* head,runner*tail, int* count){
                 //country
                 token = strtok (NULL, "\t");
                 strncpy(node->country,token,strlen(token));
+                //time_5k
+                token = strtok (NULL,"\t");
+                node->time_official = (int) strtol(token,NULL,10);
+                //time_10k
+                token = strtok (NULL,"\t");
+                node->time_official = (int) strtol(token,NULL,10);
+                //time_15k
+                token = strtok (NULL,"\t");
+                node->time_official = (int) strtol(token,NULL,10);
                 //time_official
                 token = strtok (NULL,"\t");
                 node->time_official = (int) strtol(token,NULL,10);
-                //ranking
-                token = strtok (NULL,"\t");
-                node->ranking = (int) strtol(token,NULL,10);
                 //next
                 node->next = NULL;
                 *count = *count + 1;
@@ -90,7 +98,7 @@ void readFile(runner* head,runner*tail, int* count){
                     *head = node;
                     node->next=*tail;
                 }else{
-                    *head->prev= node;
+                    (*head)->prev= node;
                     node->next = *head;
                     *head = node;
                 }
@@ -103,7 +111,7 @@ void readFile(runner* head,runner*tail, int* count){
 void print(runner head){
     runner current = head;
     while(current!=NULL){
-        printf("%6d %-30s%2c%4s%6d%6d\n",current->bib,current->name,current->gender,current->country,current->time_official,current->ranking);
+        printf("%6d %-30s%2c%4s%6d\n",current->bib,current->name,current->gender,current->country,current->time_official);
         current=current->next;
     }
 }
