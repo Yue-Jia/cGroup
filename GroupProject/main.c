@@ -81,13 +81,13 @@ void readFile(runner* head,runner*tail, int* count){
                 strncpy(node->country,token,strlen(token));
                 //time_5k
                 token = strtok (NULL,"\t");
-                node->time_official = (int) strtol(token,NULL,10);
+                node->time_5k = (int) strtol(token,NULL,10);
                 //time_10k
                 token = strtok (NULL,"\t");
-                node->time_official = (int) strtol(token,NULL,10);
+                node->time_10k = (int) strtol(token,NULL,10);
                 //time_15k
                 token = strtok (NULL,"\t");
-                node->time_official = (int) strtol(token,NULL,10);
+                node->time_15k = (int) strtol(token,NULL,10);
                 //time_official
                 token = strtok (NULL,"\t");
                 node->time_official = (int) strtol(token,NULL,10);
@@ -111,7 +111,7 @@ void readFile(runner* head,runner*tail, int* count){
 void print(runner head){
     runner current = head;
     while(current!=NULL){
-        printf("%6d %-30s%2c%4s%6d\n",current->bib,current->name,current->gender,current->country,current->time_official);
+        printf("%6d %-30s%2c%4s%6d%6d%6d%6d\n",current->bib,current->name,current->gender,current->country,current->time_5k,current->time_10k,current->time_15k,current->time_official);
         current=current->next;
     }
 }
