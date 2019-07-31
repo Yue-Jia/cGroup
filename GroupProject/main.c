@@ -25,6 +25,8 @@ typedef struct runner{
 
 void readFile(runner*,runner*, int*);
 void print(runner);
+char* tts(int);
+runner* refreshBibArray(runner, int);
 
 int main() {
     // Create head pointers. This pointer should point to the first node of the linked list
@@ -41,8 +43,11 @@ int main() {
     readFile(&head, &tail, &size);
 
     //selection_sort(arr, size);
-    
-    print(tail);
+    runner* bibArray = refreshBibArray(head,size);
+        for(int i=0;i<size;i++){
+        printf("%6d ",bibArray[i]->bib);
+    }
+    //print(tail);
     //write_out(arr, size);
     
     //free_memory(arr, size);
@@ -108,16 +113,64 @@ void readFile(runner* head,runner*tail, int* count){
     printf("%d records loaded.",*count);
     fclose(fp);
 }
+
+char* tts(int n){
+    static char str[9]={0};
+    snprintf(str,9, "%2d:%2d:%2d", n/3600,(n%3600)/60,n%60);
+    for(int i=1;i<8;i++){
+        if(str[i] == ' '){
+            str[i]='0';
+        }
+    }
+    return str;
+}
+
 void print(runner head){
     runner current = head;
     while(current!=NULL){
-        printf("%6d %-30s%2c%4s%6d%6d%6d%6d\n",current->bib,current->name,current->gender,current->country,current->time_5k,current->time_10k,current->time_15k,current->time_official);
+        printf("%6d %-30s%2c%4s%9s",current->bib,current->name,current->gender,current->country,tts(current->time_5k));
+        printf("%9s",tts(current->time_10k));
+        printf("%9s",tts(current->time_15k));
+        printf("%9s\n",tts(current->time_official));
         current=current->prev;
     }
 }
-void timeToString(int n){
-    
+void swap(runner* a, runner* b){
+    runner temp = *a;
+    *a = *b;
+    *b = temp;
 }
+int Partition(runner* a, int low,int high){
+    int i=low;
+    for(int j = low;j<high;j++){
+        if((a[j])->bib < (a[high])->bib){
+            //swap
+            swap(&a[i],&a[j]);
+            i++;
+        }
+    }
+    swap(&a[high],&a[i]);
+    return i;
+}
+void QuickSort(runner* a, int low, int high){
+    if(low<high){
+        int p = Partition(a,low,high);
+        QuickSort(a,low,p-1);
+        QuickSort(a,p+1,high);
+    }
+}
+runner* refreshBibArray(runner head, int size){
+    runner current = head;
+    runner* bibArray = (runner*) malloc(size*sizeof(runner));
+    for(int i=0;i<size;i++){
+        bibArray[i] = current;
+        current = current->next;
+    }
+
+    QuickSort(bibArray,0,size-1);
+    return bibArray;
+}
+
 void add(){
 
 }
@@ -130,7 +183,10 @@ void edit(){
 void delete(){
 
 }
-int search(){
+runner searchName(char* name){
+
+}
+runner searchBib(int number){
 
 }
 void sort(){
