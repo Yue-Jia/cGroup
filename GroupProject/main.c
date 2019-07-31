@@ -13,9 +13,10 @@
 typedef struct runner{
     char* name;
     char gender;
-    char country[3];
+    char country[4];
     int bib;
-    int record;
+    int ranking;
+    int time_official;
     struct runner* next;
 }runnerType,*runner;
 
@@ -37,7 +38,7 @@ int main() {
 
     //selection_sort(arr, size);
     
-    //print(head);
+    print(head);
     //write_out(arr, size);
     
     //free_memory(arr, size);
@@ -68,6 +69,19 @@ void readFile(runner* head, int* count){
                 token = strtok (NULL, "\t");
                 node->name = (char*) calloc(strlen(token)+1,sizeof(char));
                 strncpy(node->name, token, strlen(token));
+                //gender
+                token = strtok (NULL, "\t");
+                node->gender = token[0];
+                //country
+                token = strtok (NULL, "\t");
+                strncpy(node->country,token,strlen(token));
+                //time_official
+                token = strtok (NULL,"\t");
+                node->time_official = (int) strtol(token,NULL,10);
+                //ranking
+                token = strtok (NULL,"\t");
+                node->ranking = (int) strtol(token,NULL,10);
+                //next
                 node->next = NULL;
                 *count = *count + 1;
                 if(*count == 1){
@@ -85,7 +99,7 @@ void readFile(runner* head, int* count){
 void print(runner head){
     runner current = head;
     while(current!=NULL){
-        printf("%6d%30s\n",current->bib,current->name);
+        printf("%6d %-30s%2c%4s%6d%6d\n",current->bib,current->name,current->gender,current->country,current->time_official,current->ranking);
         current=current->next;
     }
 }
