@@ -18,15 +18,17 @@ typedef struct runner{
     int ranking;
     int time_official;
     struct runner* next;
+    struct runner* prev;
 }runnerType,*runner;
 
-void readFile(runner*, int*);
+void readFile(runner*,runner*, int*);
 void print(runner);
 
 int main() {
     // Create head pointers. This pointer should point to the first node of the linked list
     // The linked list should be saved on the heap.
     runner head = NULL;
+    runner tail = NULL;
 
     // Number of quotes in the file quotes.txt. We assume initially that file has MAX_QUOTES quotes.
     // Must be adjusted in the function read_in when the file is read!
@@ -44,7 +46,7 @@ int main() {
     //free_memory(arr, size);
     return 0;
 }
-void readFile(runner* head, int* count){
+void readFile(runner* head,runner*tail, int* count){
     FILE *fp;
     fp = fopen("data.txt","r");
     if(fp == NULL){
@@ -86,7 +88,9 @@ void readFile(runner* head, int* count){
                 *count = *count + 1;
                 if(*count == 1){
                     *head = node;
+                    node->next=*tail;
                 }else{
+                    *head->prev= node;
                     node->next = *head;
                     *head = node;
                 }

@@ -9,5 +9,8 @@
         <group>
             <file>file:/C:/Users/Yue/Documents/NetBeansProjects/GroupProject/main.c</file>
         </group>
+        <group name="CProjects">
+            <file>file:/C:/CProjects/cGroup/GroupProject/main.c</file>
+        </group>
     </open-files>
 </project-private>
