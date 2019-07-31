@@ -42,7 +42,7 @@ int main() {
 
     //selection_sort(arr, size);
     
-    print(head);
+    print(tail);
     //write_out(arr, size);
     
     //free_memory(arr, size);
@@ -96,7 +96,7 @@ void readFile(runner* head,runner*tail, int* count){
                 *count = *count + 1;
                 if(*count == 1){
                     *head = node;
-                    node->next=*tail;
+                    *tail=node;
                 }else{
                     (*head)->prev= node;
                     node->next = *head;
@@ -112,8 +112,11 @@ void print(runner head){
     runner current = head;
     while(current!=NULL){
         printf("%6d %-30s%2c%4s%6d%6d%6d%6d\n",current->bib,current->name,current->gender,current->country,current->time_5k,current->time_10k,current->time_15k,current->time_official);
-        current=current->next;
+        current=current->prev;
     }
+}
+void timeToString(int n){
+    
 }
 void add(){
 
