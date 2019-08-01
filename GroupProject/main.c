@@ -29,20 +29,20 @@ char* tts(int);
 runner* refreshBibArray(runner, int);
 
 int main() {
-    // Create head pointers. This pointer should point to the first node of the linked list
-    // The linked list should be saved on the heap.
+    // Create head and tail pointers.
+    // These pointers should point to the first node and last node of the double linked list
+    // The linked list should be saved in heap.
     runner head = NULL;
     runner tail = NULL;
 
-    // Number of quotes in the file quotes.txt. We assume initially that file has MAX_QUOTES quotes.
-    // Must be adjusted in the function read_in when the file is read!
+    // Number of runners in the file data.txt.
+    // Must be updated after INSERT or DELETE operation!
     int size=0; 
 
-    // Read quotes from file and place them into array arr. 
-    // Note: size reflects how many quotes we read from the file (between 0 and MAX_QUOTES).
+    // Read runners data from file and place them into double linked list. 
+    // Note: size reflects how many runners we read from the file.
     readFile(&head, &tail, &size);
 
-    //selection_sort(arr, size);
     //before refresh, remember to free the memory
     runner* bibArray = refreshBibArray(head,size);
         for(int i=0;i<size;i++){
