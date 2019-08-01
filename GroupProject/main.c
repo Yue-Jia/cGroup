@@ -43,6 +43,7 @@ int main() {
     readFile(&head, &tail, &size);
 
     //selection_sort(arr, size);
+    //before refresh, remember to free the memory
     runner* bibArray = refreshBibArray(head,size);
         for(int i=0;i<size;i++){
         printf("%6d ",bibArray[i]->bib);
