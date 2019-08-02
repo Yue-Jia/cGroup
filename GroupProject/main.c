@@ -516,8 +516,29 @@ void edit() {
 
 }
 
-void delete() {
 
+void delete(runner* current, runner* head, runner* tail) {
+  
+    //check if the node is at the end of array
+    if((*current)->next == NULL) {
+        (*tail) = current->prev;
+    }
+    
+    //check if the node is at the front of the array
+    if((*current)->prev == NULL) {
+        (*head) = (*current)->next;
+        
+    //if node is not the end or front of the array, change the next pointer of 
+    //previous node to next of current node, and change the previous pointer of 
+    //the next node to previous of current node.
+    } else {
+        (*current)->prev->next = (*current)->next;
+        (*current)->next->prev = (*current)->prev;    
+    }
+
+    //free the current node;
+    free(current);
+    size--;
 }
 
 void free_memory(runner head, runner* bibArray, htNode* nameTable){
