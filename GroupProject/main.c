@@ -9,6 +9,7 @@
 
 // The maximum size of the string in the file.
 #define MAX_LEN 1000
+#define FLUSH stdin=freopen(NULL,"r",stdin)
 
 typedef struct runner{
     char* name;
@@ -172,7 +173,78 @@ runner* refreshBibArray(runner head, int size){
     return bibArray;
 }
 
-void add(){
+void add(runner* head,runner* tail){
+    char*tem = (char*) calloc(MAX_LEN, sizeof (char));
+    int tempp;
+    char ttt[MAX_LEN];
+    runner tempr = (runner) malloc(sizeof (runnerType));
+    if (tempr == NULL) {
+        printf("Can not get space from heap for new runner node.");
+        exit(1);
+    }
+    tempr->time_10k = tempr->time_15k = tempr->time_5k = 0;
+    printf("Please enter the runner name:");
+    fgets(tem, MAX_LEN, stdin);
+    REMOVERN(tem);
+    strncpy(tempr->name, tem, strlen(tem));
+    FLUSH;
+    printf("Please enter the runner gender:");
+    fgets(tem, MAX_LEN, stdin);
+    REMOVERN(tem);
+    tempr->gender = tem[0];
+    FLUSH;
+    printf("Please enter the runner country:");
+    fgets(tem, MAX_LEN, stdin);
+    REMOVERN(tem);
+    tem[3] = '\0';
+    strncpy(tempr->country, tem, strlen(tem) + 1);
+    FLUSH;
+    do {
+        printf("Please enter the runner bib number:");
+        fgets(ttt, MAX_LEN, stdin);
+        tempp = strtol(ttt, NULL, 10);
+        FLUSH;
+    } while (!tempp);
+    tempr->bib = tempp;
+    //scanf("%d",&(tempr->bib)); 
+    do {
+        printf("Please enter the runner official time:");
+        //scanf("%d",&(tempr->time_official));
+        fgets(ttt, MAX_LEN, stdin);
+        tempp = strtol(ttt, NULL, 10);
+        FLUSH;
+    } while (!tempp);
+    tempr->time_official = tempp;
+    tempr->next = NULL;
+    tempr->prev = NULL;
+    //insert into right position
+    runner curr = *head;
+    while (((tempr->time_official)<(curr->time_official))&&(curr->next != NULL)) {
+        curr = curr->next;
+    }
+    if (curr->next == NULL) {
+        if (((tempr->time_official)<(curr->time_official))) {
+            curr->next = tempr;
+            tempr->prev = curr;
+            (*tail) = tempr;
+        } else {
+            tempr->prev = curr->prev;
+            tempr->next = curr;
+            curr->prev->next = tempr;
+            curr->prev = tempr;
+        }
+    } else {
+        if (tempr->time_official >= (*head)->time_official) {
+            (*head)->prev = tempr;
+            tempr->next = (*head);
+            (*head) = tempr;
+        } else {
+            tempr->prev = curr->prev;
+            tempr->next = curr;
+            curr->prev->next = tempr;
+            curr->prev = tempr;
+        }
+    }
 
 }
 void detail(){
