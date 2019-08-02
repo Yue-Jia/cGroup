@@ -1,14 +1,14 @@
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 //remove new line '\n' and return '\r' characters
 #define REMOVERN(str) str[strcspn(str,"\r\n")] = 0;
 
 // The maximum size of the string in the file.
 #define MAX_LEN 1000
+#define TABLESIZE 9973//30671
 #define FLUSH stdin=freopen(NULL,"r",stdin)
 
 typedef struct runner{
@@ -24,13 +24,22 @@ typedef struct runner{
     struct runner* prev;
 }runnerType,*runner;
 
+typedef struct hashTableNode{
+    runner ptr;
+    struct hashTableNode* next;
+}htNodeType,*htNode;
+
 void readFile(runner*,runner*, int*);
 void print(runner);
 void printRunner(runner);
 char* tts(int);
 runner* refreshBibArray(runner, int);
 void searchBib(runner*, int, int);
-void searchName(char*);
+htNode* refreshNameHashTable(runner);
+unsigned int hashFunction(unsigned int);
+void htInsert(htNode*,char*, runner);
+unsigned int keyToInt(char*);
+void searchName(htNode*, char*);
 int main() {
     // Create head and tail pointers.
     // These pointers should point to the first node and last node of the double linked list
@@ -40,28 +49,34 @@ int main() {
 
     // Number of runners in the file data.txt.
     // Must be updated after INSERT or DELETE operation!
-    int size=0; 
+    int size=0;
 
     // Read runners data from file and place them into double linked list. 
     // Note: size reflects how many runners we read from the file.
     readFile(&head, &tail, &size);
 
+
     //before refresh, remember to free the memory
     runner* bibArray = refreshBibArray(head,size);
-    
     //search bib, print detail
     //searchBib(bibArray,size,141);
 
+    //Create name hash table
+    htNode* nameTable = refreshNameHashTable(head);
     //search name, print detail
-    //searchName("Natasha Wodak");
-    
-    //print(tail);
+    searchName(nameTable,"Sarah Cruickshank");
+    for(int i=0;i<TABLESIZE;i++){
+        if(nameTable[i] != NULL){
+            //printf("%s\n",nameTable[i]->ptr->name);
+        }
+    }
+    //print(head);
     //write_out(arr, size);
     
     //free_memory(arr, size);
     return 0;
 }
-void readFile(runner* head,runner*tail, int* count){
+void readFile(runner* head,runner* tail, int* count){
     FILE *fp;
     fp = fopen("data.txt","r");
     if(fp == NULL){
@@ -106,13 +121,14 @@ void readFile(runner* head,runner*tail, int* count){
                 node->time_official = (int) strtol(token,NULL,10);
                 //next
                 node->next = NULL;
+                node->prev = NULL;
                 *count = *count + 1;
                 if(*count == 1){
                     *head = node;
-                    *tail=node;
+                    *tail = node;
                 }else{
-                    (*head)->prev= node;
                     node->next = *head;
+                    (*head)->prev = node;
                     *head = node;
                 }
             }
@@ -144,6 +160,67 @@ void searchBib(runner* bibArray, int size, int bib){
         printf("Cannot find the runner with this bib number.\n");
     }
 }
+
+htNode* refreshNameHashTable(runner head){
+    runner current = head;
+    //allocate memory
+    htNode* nameTable = (htNode*) malloc(TABLESIZE * sizeof(htNode));
+    //clean table
+    for(int i=0;i<TABLESIZE;i++){
+        nameTable[i] = NULL;
+    }
+    //insert data into table
+    while(current != NULL){
+        htInsert(nameTable, current->name, current);
+        current = current->next;
+    }
+    printf("Runner name hash table updated.\n");
+    return nameTable;
+}
+
+unsigned int hashFunction(unsigned int k){
+    double goldenRatio = (sqrt(5) - 1) /2;
+    return floor( TABLESIZE * (fmod(k * goldenRatio, 1)));
+}
+
+unsigned int keyToInt(char* key){
+    unsigned int n = 0;
+    for(int i=0;i<strlen(key);i++){
+        n = n*32 + key[i];
+    }
+    return n;
+}
+
+void htInsert(htNode* nameTable,char* key, runner r){
+    int index = hashFunction(keyToInt(key));
+    htNode temp = nameTable[index];
+    nameTable[index] = (htNode) malloc(sizeof(htNodeType));
+    if(nameTable[index] != NULL){
+        (nameTable[index])->ptr = r;
+        (nameTable[index])->next = temp;
+    }else{
+        printf("Cannot allocate memory for hash table separating chain node");
+    }
+}
+
+htNode htsearch(htNode* nameTable,char* key) {
+	int index = hashFunction(keyToInt(key));
+	htNode temp = nameTable[index];
+	while(temp != NULL && strcmp(temp->ptr->name,key) != 0){
+            temp = temp->next;
+        }
+	return temp;
+}
+
+void searchName(htNode* nameTable,char* key){
+    htNode h = htsearch(nameTable,key);
+    if(h != NULL){
+        printRunner(h->ptr);
+    }else{
+        printf("Cannot find the runner with this name.\n");
+    }
+}
+
 char* tts(int n){
     static char str[9]={0};
     snprintf(str,9, "%2d:%2d:%2d", n/3600,(n%3600)/60,n%60);
@@ -157,12 +234,12 @@ char* tts(int n){
 
 void print(runner head){
     runner current = head;
-    while(current!=NULL){
+    while(current != NULL){
         printf("%6d %-30s%2c%4s%9s",current->bib,current->name,current->gender,current->country,tts(current->time_5k));
         printf("%9s",tts(current->time_10k));
         printf("%9s",tts(current->time_15k));
         printf("%9s\n",tts(current->time_official));
-        current=current->prev;
+        current = current->next;
     }
 }
 
@@ -207,7 +284,6 @@ runner* refreshBibArray(runner head, int size){
         bibArray[i] = current;
         current = current->next;
     }
-
     QuickSort(bibArray,0,size-1);
     printf("Sorted Bib Array successfully updated.\n");
     return bibArray;
@@ -294,9 +370,6 @@ void edit(){
 
 }
 void delete(){
-
-}
-void searchName(char* name){
 
 }
 
