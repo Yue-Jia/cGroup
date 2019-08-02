@@ -43,6 +43,9 @@ void searchName(htNode*, char*);
 void free_memory(runner, runner*, htNode*);
 void writeFile(runner);
 
+//global variable
+int size = 0;
+
 int main() {
     // Create head and tail pointers.
     // These pointers should point to the first node and last node of the double linked list
@@ -52,10 +55,8 @@ int main() {
 
     // Number of runners in the file data.txt.
     // Must be updated after INSERT or DELETE operation!
-    int size = 0;
 
     // Read runners data from file and place them into double linked list. 
-    // Note: size reflects how many runners we read from the file.
     readFile(&head, &tail, &size);
 
 
@@ -67,10 +68,10 @@ int main() {
     //Create name hash table
     htNode* nameTable = refreshNameHashTable(head);
     //search name, print detail
-    searchName(nameTable, "Juntong Hou");
+    //searchName(nameTable, "Juntong Hou");
 
     //print(head);
-    writeFile(head);
+    //writeFile(head);
     free_memory(head, bibArray, nameTable);
     return 0;
 }
