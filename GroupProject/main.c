@@ -66,13 +66,27 @@ int main() {
     //before refresh, remember to free the memory
     runner* bibArray = refreshBibArray(head, size);
     //search bib, print detail
-    searchBib(bibArray,141);
+    //searchBib(bibArray,141);
     
     //Create name hash table
     htNode* nameTable = refreshNameHashTable(head);
     //search name, print detail
     //searchName(nameTable, "Juntong Hou");
 
+    //Command Line Interface
+    while(true){
+        printf("|Q| Quit |B| List by Bib DESC |O| List by Official Time ASC\n");
+        char userInput[MAX_LEN] = {0};
+        fgets(userInput, MAX_LEN, stdin);
+        FLUSH;
+        REMOVERN(userInput);
+        if(strlen(userInput)!=1){
+            continue;
+        }else if(userInput[0]=='q' || userInput[0]=='Q'){
+            break;
+        }
+    }
+    
     //print(head);
     //writeFile(head);
     free_memory(head, bibArray, nameTable);
