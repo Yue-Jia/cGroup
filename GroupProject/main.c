@@ -38,7 +38,7 @@ char* tts(int);
 runner* refreshBibArray(runner, int);
 int searchBibIndex(runner*, int);
 bool checkBib(runner*, int);
-void searchBib(runner*, int);
+runner searchBib(runner*, int);
 htNode* refreshNameHashTable(runner);
 unsigned int hashFunction(unsigned int);
 void htInsert(htNode*, char*, runner);
@@ -76,8 +76,10 @@ int main() {
 
     //Command Line Interface
     while(true){
+        printf("----------Main Menu----------\n");
         printf("|Q| Quit |B| List by Bib ASC |O| List by Official Time ASC\n");
         printf("|S| Search by Bib |N| Search by Name\n");
+        printf(">");
         char userInput[MAX_LEN] = {0};
         fgets(userInput, MAX_LEN, stdin);
         FLUSH;
@@ -92,6 +94,44 @@ int main() {
             print(tail);
         }else if(userInput[0]=='s' || userInput[0]=='S'){
             //Search by bib
+            while(true){
+                printf("----------Search by Bib----------\n");
+                printf("|Q| Quit\n");
+                printf("Please enter the bib number:");
+                fgets(userInput, MAX_LEN, stdin);
+                FLUSH;
+                REMOVERN(userInput);
+                if (strlen(userInput) == 1 && (userInput[0] == 'q' || userInput[0] == 'Q')) {
+                    break;
+                }else{
+                    int userInputBib = strtol(userInput, NULL, 10);
+                    if(userInputBib <= 0){
+                        printf("Incorrect input. Please try again.\n");
+                        continue;
+                    }else{
+                        printf("----------Detail----------\n");
+                        runner temp = searchBib(bibArray, userInputBib);
+                        if (temp != NULL) {
+                            printRunner(temp);
+                            while (true) {
+                                printf("|Q| Quit |E| Edit |D| Delete\n");
+                                printf(">");
+                                fgets(userInput, MAX_LEN, stdin);
+                                FLUSH;
+                                REMOVERN(userInput);
+                                if (strlen(userInput) == 1 && (userInput[0] == 'q' || userInput[0] == 'Q')) {
+                                    break;
+                                } else if(userInput[0]=='e' || userInput[0]=='E'){
+                                    //invoke edit here
+                                } else if(userInput[0]=='d' || userInput[0]=='D'){
+                                    //invoke delete here
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
     
@@ -205,13 +245,15 @@ bool checkBib(runner* bibArray, int bib){
     }
 }
 
-void searchBib(runner* bibArray, int bib) {
+runner searchBib(runner* bibArray, int bib) {
+    runner temp = NULL;
     int index = searchBibIndex(bibArray, bib);
     if (index != -1) {
-        printRunner(bibArray[index]);
+        temp = bibArray[index];
     } else {
-        printf("Cannot find the runner with this bib number.\n");
+        printf("Cannot find the runner with bib number = %d\n", bib);
     }
+    return temp;
 }
 
 htNode* refreshNameHashTable(runner head) {
@@ -270,7 +312,7 @@ void searchName(htNode* nameTable, char* key) {
     if (h != NULL) {
         printRunner(h->ptr);
     } else {
-        printf("Cannot find the runner with this name.\n");
+        printf("Cannot find the runner with this name \"%s\"\n",key);
     }
 }
 
