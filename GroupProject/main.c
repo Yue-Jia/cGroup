@@ -8,7 +8,7 @@
 
 // The maximum size of the string in the file.
 #define MAX_LEN 1000
-#define TABLESIZE 9973//30671
+#define TABLESIZE 30671
 #define FLUSH stdin=freopen(NULL,"r",stdin)
 
 typedef struct runner {
@@ -40,6 +40,7 @@ unsigned int hashFunction(unsigned int);
 void htInsert(htNode*, char*, runner);
 unsigned int keyToInt(char*);
 void searchName(htNode*, char*);
+void free_memory(runner, runner*, htNode*);
 
 int main() {
     // Create head and tail pointers.
@@ -74,7 +75,7 @@ int main() {
     //print(head);
     //write_out(arr, size);
 
-    //free_memory(arr, size);
+    free_memory(head, bibArray, nameTable);
     return 0;
 }
 
@@ -303,7 +304,7 @@ void add(runner* head, runner* tail) {
     runner tempr = (runner) malloc(sizeof (runnerType));
     if (tempr == NULL) {
         printf("Can not get space from heap for new runner node.");
-        exit(1);
+        return;
     }
     tempr->time_10k = tempr->time_15k = tempr->time_5k = 0;
     printf("Please enter the runner name:");
@@ -372,9 +373,24 @@ void add(runner* head, runner* tail) {
 }
 
 void edit() {
-
+    printf("Here");
+    return;
 }
 
 void delete() {
 
+}
+
+void free_memory(runner head, runner* bibArray, htNode* nameTable){
+    runner current = head;
+    while(current != NULL){
+        head = current->next;
+        free(current);
+        current = head;
+    }
+    free(bibArray);
+    for(int i=0;i<TABLESIZE;i++){
+        free(nameTable[i]);
+    }
+    free(nameTable);
 }
