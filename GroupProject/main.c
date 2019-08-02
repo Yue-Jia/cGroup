@@ -44,6 +44,8 @@ unsigned int hashFunction(unsigned int);
 void htInsert(htNode*, char*, runner);
 unsigned int keyToInt(char*);
 runner searchName(htNode*, char*);
+void delete(runner*, runner*, runner*);
+void free_nameTable(htNode*);
 void free_memory(runner, runner*, htNode*);
 void writeFile(runner);
 
@@ -68,14 +70,14 @@ int main() {
     runner* bibArray = refreshBibArray(head, size);
     //search bib, print detail
     //searchBib(bibArray,141);
-    
+
     //Create name hash table
     htNode* nameTable = refreshNameHashTable(head);
     //search name, print detail
     //searchName(nameTable, "Juntong Hou");
 
     //Command Line Interface
-    while(true){
+    while (true) {
         printf("----------Main Menu----------\n");
         printf("|Q| Quit |B| List by Bib ASC |O| List by Official Time ASC\n");
         printf("|S| Search by Bib |N| Search by Name\n");
@@ -84,17 +86,17 @@ int main() {
         fgets(userInput, MAX_LEN, stdin);
         FLUSH;
         REMOVERN(userInput);
-        if(strlen(userInput)!=1){
+        if (strlen(userInput) != 1) {
             continue;
-        }else if(userInput[0]=='q' || userInput[0]=='Q'){
+        } else if (userInput[0] == 'q' || userInput[0] == 'Q') {
             break;
-        }else if(userInput[0]=='b' || userInput[0]=='B'){
+        } else if (userInput[0] == 'b' || userInput[0] == 'B') {
             printBibArray(bibArray);
-        }else if(userInput[0]=='o' || userInput[0]=='O'){
+        } else if (userInput[0] == 'o' || userInput[0] == 'O') {
             print(tail);
-        }else if(userInput[0]=='n' || userInput[0]=='N'){
+        } else if (userInput[0] == 'n' || userInput[0] == 'N') {
             //Search by Name
-            while(true){
+            while (true) {
                 printf("----------Search by Name----------\n");
                 printf("|Q| Quit\n");
                 printf("Please enter the runner name:");
@@ -120,15 +122,22 @@ int main() {
                                 printRunner(temp);
                             } else if (userInput[0] == 'd' || userInput[0] == 'D') {
                                 //invoke delete here
+                                delete(&temp, &head, &tail);
+                                //update bibArray
+                                free(bibArray);
+                                bibArray = refreshBibArray(head, size);
+                                //update nameTable
+                                free_nameTable(nameTable);
+                                nameTable = refreshNameHashTable(head);
                                 break;
                             }
                         }
                     }
                 }
             }
-        }else if(userInput[0]=='s' || userInput[0]=='S'){
+        } else if (userInput[0] == 's' || userInput[0] == 'S') {
             //Search by Bib
-            while(true){
+            while (true) {
                 printf("----------Search by Bib----------\n");
                 printf("|Q| Quit\n");
                 printf("Please enter the bib number:");
@@ -137,12 +146,12 @@ int main() {
                 REMOVERN(userInput);
                 if (strlen(userInput) == 1 && (userInput[0] == 'q' || userInput[0] == 'Q')) {
                     break;
-                }else{
+                } else {
                     int userInputBib = strtol(userInput, NULL, 10);
-                    if(userInputBib <= 0){
+                    if (userInputBib <= 0) {
                         printf("Incorrect input. Please try again.\n");
                         continue;
-                    }else{
+                    } else {
                         runner temp = searchBib(bibArray, userInputBib);
                         if (temp != NULL) {
                             printRunner(temp);
@@ -154,11 +163,18 @@ int main() {
                                 REMOVERN(userInput);
                                 if (strlen(userInput) == 1 && (userInput[0] == 'q' || userInput[0] == 'Q')) {
                                     break;
-                                } else if(userInput[0]=='e' || userInput[0]=='E'){
+                                } else if (userInput[0] == 'e' || userInput[0] == 'E') {
                                     //invoke edit here
                                     printRunner(temp);
-                                } else if(userInput[0]=='d' || userInput[0]=='D'){
+                                } else if (userInput[0] == 'd' || userInput[0] == 'D') {
                                     //invoke delete here
+                                    delete(&temp, &head, &tail);
+                                    //update bibArray
+                                    free(bibArray);
+                                    bibArray = refreshBibArray(head, size);
+                                    //update nameTable
+                                    free_nameTable(nameTable);
+                                    nameTable = refreshNameHashTable(head);
                                     break;
                                 }
                             }
@@ -168,23 +184,23 @@ int main() {
             }
         }
     }
-    
+
     //print(head);
     //writeFile(head);
     free_memory(head, bibArray, nameTable);
     return 0;
 }
 
-void writeFile(runner head){
+void writeFile(runner head) {
     FILE *fp;
     fp = fopen("data2.txt", "w");
-    if(fp == NULL){
+    if (fp == NULL) {
         printf("Error reading file");
         return;
     }
     runner current = head;
-    while(current !=NULL){
-        fprintf(fp, "%d\t%s\t%c\t%s\t%d\t%d\t%d\t%d\r\n",current->bib, current->name, current->gender, current->country, current->time_5k, current->time_10k, current->time_15k, current->time_official);
+    while (current != NULL) {
+        fprintf(fp, "%d\t%s\t%c\t%s\t%d\t%d\t%d\t%d\r\n", current->bib, current->name, current->gender, current->country, current->time_5k, current->time_10k, current->time_15k, current->time_official);
         current = current->next;
     }
     fclose(fp);
@@ -251,7 +267,8 @@ void readFile(runner* head, runner* tail, int* count) {
     printf("%d records loaded.\n", *count);
     fclose(fp);
 }
-int searchBibIndex(runner* bibArray, int bib){
+
+int searchBibIndex(runner* bibArray, int bib) {
     int low = 0;
     int high = size - 1;
     int mid;
@@ -270,7 +287,8 @@ int searchBibIndex(runner* bibArray, int bib){
     }
     return key;
 }
-bool checkBib(runner* bibArray, int bib){
+
+bool checkBib(runner* bibArray, int bib) {
     int index = searchBibIndex(bibArray, bib);
     if (index != -1) {
         return true;
@@ -346,7 +364,7 @@ runner searchName(htNode* nameTable, char* key) {
     if (h != NULL) {
         return (h->ptr);
     } else {
-        printf("Cannot find the runner with this name \"%s\"\n",key);
+        printf("Cannot find the runner with this name \"%s\"\n", key);
         return NULL;
     }
 }
@@ -369,16 +387,16 @@ void print(runner head) {
         printf("%9s", tts(current->time_10k));
         printf("%9s", tts(current->time_15k));
         printf("%9s\n", tts(current->time_official));
-        if(head->prev == NULL){
+        if (head->prev == NULL) {
             current = current->next;
-        }else{
+        } else {
             current = current->prev;
         }
     }
 }
 
-void printBibArray(runner* bibArray){
-    for(int i=0;i<size;i++){
+void printBibArray(runner* bibArray) {
+    for (int i = 0; i < size; i++) {
         printf("%6d %-30s%2c%4s%9s", bibArray[i]->bib, bibArray[i]->name, bibArray[i]->gender, bibArray[i]->country, tts(bibArray[i]->time_5k));
         printf("%9s", tts(bibArray[i]->time_10k));
         printf("%9s", tts(bibArray[i]->time_15k));
@@ -516,40 +534,47 @@ void edit() {
 
 }
 
-
 void delete(runner* current, runner* head, runner* tail) {
-  
+
     //check if the node is at the end of array
-    if((*current)->next == NULL) {
-        (*tail) = current->prev;
+    if ((*current)->next == NULL) {
+        (*tail) = (*current)->prev;
     }
-    
+
     //check if the node is at the front of the array
-    if((*current)->prev == NULL) {
+    if ((*current)->prev == NULL) {
         (*head) = (*current)->next;
-        
-    //if node is not the end or front of the array, change the next pointer of 
-    //previous node to next of current node, and change the previous pointer of 
-    //the next node to previous of current node.
+
+        //if node is not the end or front of the array, change the next pointer of 
+        //previous node to next of current node, and change the previous pointer of 
+        //the next node to previous of current node.
     } else {
         (*current)->prev->next = (*current)->next;
-        (*current)->next->prev = (*current)->prev;    
+        (*current)->next->prev = (*current)->prev;
     }
 
     //free the current node;
-    free(current);
+    free(*current);
     size--;
+    printf("Delete successfully\n");
 }
 
-void free_memory(runner head, runner* bibArray, htNode* nameTable){
+void free_nameTable(htNode* nameTable) {
+    for (int i = 0; i < TABLESIZE; i++) {
+        free(nameTable[i]);
+    }
+    free(nameTable);
+}
+
+void free_memory(runner head, runner* bibArray, htNode* nameTable) {
     runner current = head;
-    while(current != NULL){
+    while (current != NULL) {
         head = current->next;
         free(current);
         current = head;
     }
     free(bibArray);
-    for(int i=0;i<TABLESIZE;i++){
+    for (int i = 0; i < TABLESIZE; i++) {
         free(nameTable[i]);
     }
     free(nameTable);
