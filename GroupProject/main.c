@@ -41,6 +41,7 @@ void htInsert(htNode*, char*, runner);
 unsigned int keyToInt(char*);
 void searchName(htNode*, char*);
 void free_memory(runner, runner*, htNode*);
+void writeFile(runner);
 
 int main() {
     // Create head and tail pointers.
@@ -67,21 +68,31 @@ int main() {
     htNode* nameTable = refreshNameHashTable(head);
     //search name, print detail
     searchName(nameTable, "Juntong Hou");
-    for (int i = 0; i < TABLESIZE; i++) {
-        if (nameTable[i] != NULL) {
-            //printf("%s\n",nameTable[i]->ptr->name);
-        }
-    }
-    //print(head);
-    //write_out(arr, size);
 
+    //print(head);
+    writeFile(head);
     free_memory(head, bibArray, nameTable);
     return 0;
 }
 
+void writeFile(runner head){
+    FILE *fp;
+    fp = fopen("data2.txt", "w");
+    if(fp == NULL){
+        printf("Error reading file");
+        return;
+    }
+    runner current = head;
+    while(current !=NULL){
+        fprintf(fp, "%d\t%s\t%c\t%s\t%d\t%d\t%d\t%d\r\n",current->bib, current->name, current->gender, current->country, current->time_5k, current->time_10k, current->time_15k, current->time_official);
+        current = current->next;
+    }
+    fclose(fp);
+}
+
 void readFile(runner* head, runner* tail, int* count) {
     FILE *fp;
-    fp = fopen("data.txt", "r");
+    fp = fopen("data2.txt", "r");
     if (fp == NULL) {
         printf("Error reading file");
         exit(1);
@@ -373,8 +384,7 @@ void add(runner* head, runner* tail) {
 }
 
 void edit() {
-    printf("Here");
-    return;
+
 }
 
 void delete() {
