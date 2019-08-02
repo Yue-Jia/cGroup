@@ -25,9 +25,11 @@ typedef struct runner{
 
 void readFile(runner*,runner*, int*);
 void print(runner);
+void printRunner(runner);
 char* tts(int);
 runner* refreshBibArray(runner, int);
-
+void searchBib(runner*, int, int);
+void searchName(char*);
 int main() {
     // Create head and tail pointers.
     // These pointers should point to the first node and last node of the double linked list
@@ -45,9 +47,13 @@ int main() {
 
     //before refresh, remember to free the memory
     runner* bibArray = refreshBibArray(head,size);
-        for(int i=0;i<size;i++){
-        printf("%6d ",bibArray[i]->bib);
-    }
+    
+    //search bib, print detail
+    //searchBib(bibArray,size,141);
+
+    //search name, print detail
+    //searchName("Natasha Wodak");
+    
     //print(tail);
     //write_out(arr, size);
     
@@ -111,10 +117,32 @@ void readFile(runner* head,runner*tail, int* count){
             }
         }
     }
-    printf("%d records loaded.",*count);
+    printf("%d records loaded.\n",*count);
     fclose(fp);
 }
-
+void searchBib(runner* bibArray, int size, int bib){
+    int low = 0;
+    int high = size-1;
+    int mid;
+    int key = -1;
+    while(low <= high){
+        mid = (low + high)/2;
+        if(bib == bibArray[mid]->bib){
+            key = mid;
+            break;
+        }
+        if(bib < bibArray[mid]->bib){
+            high = mid-1;
+        }else{
+            low = mid+1;
+        }
+    }
+    if( key != -1){
+        printRunner(bibArray[key]);
+    }else{
+        printf("Cannot find the runner with this bib number.\n");
+    }
+}
 char* tts(int n){
     static char str[9]={0};
     snprintf(str,9, "%2d:%2d:%2d", n/3600,(n%3600)/60,n%60);
@@ -135,6 +163,17 @@ void print(runner head){
         printf("%9s\n",tts(current->time_official));
         current=current->prev;
     }
+}
+
+void printRunner(runner current){
+        printf("Bib Number: %d\n",current->bib);
+        printf("Name: %s\n",current->name);
+        printf("Gender: %c\n",current->gender);
+        printf("Country: %s\n",current->country);
+        printf("5km Split Time:  %s\n",tts(current->time_5k));
+        printf("10km Split Time: %s\n",tts(current->time_10k));
+        printf("15km Split Time: %s\n",tts(current->time_15k));
+        printf("Official Time:   %s\n",tts(current->time_official));
 }
 void swap(runner* a, runner* b){
     runner temp = *a;
@@ -169,6 +208,7 @@ runner* refreshBibArray(runner head, int size){
     }
 
     QuickSort(bibArray,0,size-1);
+    printf("Sorted Bib Array successfully updated.\n");
     return bibArray;
 }
 
@@ -184,12 +224,10 @@ void edit(){
 void delete(){
 
 }
-runner searchName(char* name){
+void searchName(char* name){
 
 }
-runner searchBib(int number){
 
-}
 void sort(){
 
 }
