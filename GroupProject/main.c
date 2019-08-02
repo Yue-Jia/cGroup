@@ -117,6 +117,7 @@ int main() {
                                 break;
                             } else if (userInput[0] == 'e' || userInput[0] == 'E') {
                                 //invoke edit here
+                                printRunner(temp);
                             } else if (userInput[0] == 'd' || userInput[0] == 'D') {
                                 //invoke delete here
                                 break;
@@ -155,6 +156,7 @@ int main() {
                                     break;
                                 } else if(userInput[0]=='e' || userInput[0]=='E'){
                                     //invoke edit here
+                                    printRunner(temp);
                                 } else if(userInput[0]=='d' || userInput[0]=='D'){
                                     //invoke delete here
                                     break;
