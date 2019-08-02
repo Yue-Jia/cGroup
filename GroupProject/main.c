@@ -43,7 +43,7 @@ htNode* refreshNameHashTable(runner);
 unsigned int hashFunction(unsigned int);
 void htInsert(htNode*, char*, runner);
 unsigned int keyToInt(char*);
-void searchName(htNode*, char*);
+runner searchName(htNode*, char*);
 void free_memory(runner, runner*, htNode*);
 void writeFile(runner);
 
@@ -92,8 +92,41 @@ int main() {
             printBibArray(bibArray);
         }else if(userInput[0]=='o' || userInput[0]=='O'){
             print(tail);
+        }else if(userInput[0]=='n' || userInput[0]=='N'){
+            //Search by Name
+            while(true){
+                printf("----------Search by Name----------\n");
+                printf("|Q| Quit\n");
+                printf("Please enter the runner name:");
+                fgets(userInput, MAX_LEN, stdin);
+                FLUSH;
+                REMOVERN(userInput);
+                if (strlen(userInput) == 1 && (userInput[0] == 'q' || userInput[0] == 'Q')) {
+                    break;
+                } else {
+                    runner temp = searchName(nameTable, userInput);
+                    if (temp != NULL) {
+                        printRunner(temp);
+                        while (true) {
+                            printf("|Q| Quit |E| Edit |D| Delete\n");
+                            printf(">");
+                            fgets(userInput, MAX_LEN, stdin);
+                            FLUSH;
+                            REMOVERN(userInput);
+                            if (strlen(userInput) == 1 && (userInput[0] == 'q' || userInput[0] == 'Q')) {
+                                break;
+                            } else if (userInput[0] == 'e' || userInput[0] == 'E') {
+                                //invoke edit here
+                            } else if (userInput[0] == 'd' || userInput[0] == 'D') {
+                                //invoke delete here
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }else if(userInput[0]=='s' || userInput[0]=='S'){
-            //Search by bib
+            //Search by Bib
             while(true){
                 printf("----------Search by Bib----------\n");
                 printf("|Q| Quit\n");
@@ -109,7 +142,6 @@ int main() {
                         printf("Incorrect input. Please try again.\n");
                         continue;
                     }else{
-                        printf("----------Detail----------\n");
                         runner temp = searchBib(bibArray, userInputBib);
                         if (temp != NULL) {
                             printRunner(temp);
@@ -307,12 +339,13 @@ htNode htsearch(htNode* nameTable, char* key) {
     return temp;
 }
 
-void searchName(htNode* nameTable, char* key) {
+runner searchName(htNode* nameTable, char* key) {
     htNode h = htsearch(nameTable, key);
     if (h != NULL) {
-        printRunner(h->ptr);
+        return (h->ptr);
     } else {
         printf("Cannot find the runner with this name \"%s\"\n",key);
+        return NULL;
     }
 }
 
@@ -352,6 +385,7 @@ void printBibArray(runner* bibArray){
 }
 
 void printRunner(runner current) {
+    printf("----------Detail----------\n");
     printf("Bib Number: %d\n", current->bib);
     printf("Name: %s\n", current->name);
     printf("Gender: %c\n", current->gender);
