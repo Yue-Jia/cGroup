@@ -44,7 +44,7 @@ unsigned int hashFunction(unsigned int);
 void htInsert(htNode*, char*, runner);
 unsigned int keyToInt(char*);
 runner searchName(htNode*, char*);
-void delete(runner*, runner*, runner*);
+void delete(runner*, runner*, runner*, htNode*, runner*, int);
 void free_nameTable(htNode*);
 void free_memory(runner, runner*, htNode*);
 void writeFile(runner);
@@ -122,13 +122,8 @@ int main() {
                                 printRunner(temp);
                             } else if (userInput[0] == 'd' || userInput[0] == 'D') {
                                 //invoke delete here
-                                delete(&temp, &head, &tail);
-                                //update bibArray
-                                free(bibArray);
-                                bibArray = refreshBibArray(head, size);
-                                //update nameTable
-                                free_nameTable(nameTable);
-                                nameTable = refreshNameHashTable(head);
+                                delete(&temp, &head, &tail, nameTable, bibArray, size);
+                                
                                 break;
                             }
                         }
@@ -168,13 +163,8 @@ int main() {
                                     printRunner(temp);
                                 } else if (userInput[0] == 'd' || userInput[0] == 'D') {
                                     //invoke delete here
-                                    delete(&temp, &head, &tail);
-                                    //update bibArray
-                                    free(bibArray);
-                                    bibArray = refreshBibArray(head, size);
-                                    //update nameTable
-                                    free_nameTable(nameTable);
-                                    nameTable = refreshNameHashTable(head);
+                                    delete(&temp, &head, &tail, nameTable, bibArray, size );
+                                    
                                     break;
                                 }
                             }
@@ -208,7 +198,7 @@ void writeFile(runner head) {
 
 void readFile(runner* head, runner* tail, int* count) {
     FILE *fp;
-    fp = fopen("data2.txt", "r");
+    fp = fopen("data.txt", "r");
     if (fp == NULL) {
         printf("Error reading file");
         exit(1);
@@ -534,7 +524,7 @@ void edit() {
 
 }
 
-void delete(runner* current, runner* head, runner* tail) {
+void delete(runner* current, runner* head, runner* tail, htNode* nameTable, runner* bibArray, int size) {
 
     //check if the node is at the end of array
     if ((*current)->next == NULL) {
@@ -557,6 +547,13 @@ void delete(runner* current, runner* head, runner* tail) {
     free(*current);
     size--;
     printf("Delete successfully\n");
+    
+    //update bibArray
+    free(bibArray);
+    bibArray = refreshBibArray((*head), size);
+                                    //update nameTable
+    free_nameTable(nameTable);
+    nameTable = refreshNameHashTable((*head));
 }
 
 void free_nameTable(htNode* nameTable) {
