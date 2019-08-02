@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <stdbool.h>
 
 //remove new line '\n' and return '\r' characters
 #define REMOVERN(str) str[strcspn(str,"\r\n")] = 0;
@@ -34,7 +35,9 @@ void print(runner);
 void printRunner(runner);
 char* tts(int);
 runner* refreshBibArray(runner, int);
-void searchBib(runner*, int, int);
+int searchBibIndex(runner*, int);
+bool checkBib(runner*, int);
+void searchBib(runner*, int);
 htNode* refreshNameHashTable(runner);
 unsigned int hashFunction(unsigned int);
 void htInsert(htNode*, char*, runner);
@@ -63,8 +66,8 @@ int main() {
     //before refresh, remember to free the memory
     runner* bibArray = refreshBibArray(head, size);
     //search bib, print detail
-    //searchBib(bibArray,size,141);
-
+    searchBib(bibArray,141);
+    
     //Create name hash table
     htNode* nameTable = refreshNameHashTable(head);
     //search name, print detail
@@ -152,8 +155,7 @@ void readFile(runner* head, runner* tail, int* count) {
     printf("%d records loaded.\n", *count);
     fclose(fp);
 }
-
-void searchBib(runner* bibArray, int size, int bib) {
+int searchBibIndex(runner* bibArray, int bib){
     int low = 0;
     int high = size - 1;
     int mid;
@@ -170,8 +172,21 @@ void searchBib(runner* bibArray, int size, int bib) {
             low = mid + 1;
         }
     }
-    if (key != -1) {
-        printRunner(bibArray[key]);
+    return key;
+}
+bool checkBib(runner* bibArray, int bib){
+    int index = searchBibIndex(bibArray, bib);
+    if (index != -1) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void searchBib(runner* bibArray, int bib) {
+    int index = searchBibIndex(bibArray, bib);
+    if (index != -1) {
+        printRunner(bibArray[index]);
     } else {
         printf("Cannot find the runner with this bib number.\n");
     }
