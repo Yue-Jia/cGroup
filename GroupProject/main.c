@@ -32,6 +32,7 @@ typedef struct hashTableNode {
 
 void readFile(runner*, runner*, int*);
 void print(runner);
+void printBibArray(runner*);
 void printRunner(runner);
 char* tts(int);
 runner* refreshBibArray(runner, int);
@@ -75,7 +76,8 @@ int main() {
 
     //Command Line Interface
     while(true){
-        printf("|Q| Quit |B| List by Bib DESC |O| List by Official Time ASC\n");
+        printf("|Q| Quit |B| List by Bib ASC |O| List by Official Time ASC\n");
+        printf("|S| Search by Bib |N| Search by Name\n");
         char userInput[MAX_LEN] = {0};
         fgets(userInput, MAX_LEN, stdin);
         FLUSH;
@@ -84,6 +86,12 @@ int main() {
             continue;
         }else if(userInput[0]=='q' || userInput[0]=='Q'){
             break;
+        }else if(userInput[0]=='b' || userInput[0]=='B'){
+            printBibArray(bibArray);
+        }else if(userInput[0]=='o' || userInput[0]=='O'){
+            print(tail);
+        }else if(userInput[0]=='s' || userInput[0]=='S'){
+            //Search by bib
         }
     }
     
@@ -284,7 +292,20 @@ void print(runner head) {
         printf("%9s", tts(current->time_10k));
         printf("%9s", tts(current->time_15k));
         printf("%9s\n", tts(current->time_official));
-        current = current->next;
+        if(head->prev == NULL){
+            current = current->next;
+        }else{
+            current = current->prev;
+        }
+    }
+}
+
+void printBibArray(runner* bibArray){
+    for(int i=0;i<size;i++){
+        printf("%6d %-30s%2c%4s%9s", bibArray[i]->bib, bibArray[i]->name, bibArray[i]->gender, bibArray[i]->country, tts(bibArray[i]->time_5k));
+        printf("%9s", tts(bibArray[i]->time_10k));
+        printf("%9s", tts(bibArray[i]->time_15k));
+        printf("%9s\n", tts(bibArray[i]->time_official));
     }
 }
 
