@@ -165,16 +165,25 @@ int main() {
                                     edit(temp, &head, &tail, bibArray);
                                     printRunner(temp);
                                 } else if (userInput[0] == 'd' || userInput[0] == 'D') {
-                                    //invoke delete here
-                                    delete(temp, &head, &tail, &nameTable, &bibArray);
-                                    break;
+                                    printf("Are you sure you want to delete runner %s? Y/Any key to Abort", temp->name);
+                                    FLUSH;
+                                    fgets(userInput, MAX_LEN, stdin);
+                                    FLUSH;
+                                    REMOVERN(userInput);
+                                    if (strlen(userInput) == 1 && (userInput[0] == 'y' || userInput[0] == 'Y')) {
+                                        //invoke delete here
+                                        delete(temp, &head, &tail, &nameTable, &bibArray);
+                                        break;
+                                    } else {
+                                        printRunner(temp);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        } else if(userInput[0] == 'i' || userInput[0] == 'I'){
+        } else if (userInput[0] == 'i' || userInput[0] == 'I') {
             add(&head, &tail, &nameTable, &bibArray);
         }
     }
@@ -475,7 +484,7 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
     tempr->gender = tem[0];
     FLUSH;
     printf("please enter the runner country:");
-    memset(tem,0,4);
+    memset(tem, 0, 4);
     fgets(tem, MAX_LEN, stdin);
     REMOVERN(tem);
     tem[3] = '\0';
@@ -490,8 +499,8 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
         fgets(ttt, MAX_LEN, stdin);
         tempp = strtol(ttt, NULL, 10);
         FLUSH;
-        rep=checkBib(*bibArray,tempp);
-        if(rep){
+        rep = checkBib(*bibArray, tempp);
+        if (rep) {
             printf("Error: Bib number already exist.\n");
         }
     } while (tempp <= 0 || rep);
@@ -561,7 +570,7 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
     }
     size++;
     printf("Insert successfully.\n");
-    
+
     //update bibArray
     free(*bibArray);
     *bibArray = refreshBibArray(*head);
@@ -574,144 +583,188 @@ void edit(runner node, runner* head, runner* tail, runner* bibArray) {
     char tem[MAX_LEN];
     int tempp;
     char ttt[MAX_LEN];
+
+    //get name
+    do{
     printf("Edit please enter the runner name:");
-    fgets(tem, MAX_LEN, stdin);
-    REMOVERN(tem);
-    free(node->name);
-    node->name = (char*) calloc(strlen(tem) + 1, sizeof (char));
-    if (node->name == NULL) {
-        printf("Can not get space from heap.");
-        return;
-    }
-    //memset(node,0,strlen(tem)+1);//free node->name , then calloc
-    strncpy((node)->name, tem, strlen(tem));
     FLUSH;
-    printf("please enter the runner gender:");
     fgets(tem, MAX_LEN, stdin);
+    FLUSH;
     REMOVERN(tem);
-    if (tem[0] > 96) {//change lowercase to upper
+    }while(strlen(tem)==0);
+    char name[MAX_LEN] = {0};
+    strncpy(name, tem, strlen(tem));
+
+    //get gender
+    do{
+    printf("please enter the runner gender:");
+    FLUSH;
+    fgets(tem, MAX_LEN, stdin);
+    FLUSH;
+    REMOVERN(tem);
+    }while(strlen(tem)==0);
+    //change lowercase to upper
+    if (tem[0] > 96) {
         tem[0] -= 32;
     }
-    (node)->gender = tem[0];
-    FLUSH;
+    char gender = tem[0];
+
+    //get country
+    do{
     printf("please enter the runner country:");
-    memset(tem,0,4);
+    memset(tem, 0, 4);
+    FLUSH;
     fgets(tem, MAX_LEN, stdin);
+    FLUSH;
     REMOVERN(tem);
     tem[3] = '\0';
-    for (int k = 0; k < strlen(tem); k++) {//change lowercase to upper
+    }while(strlen(tem)==0);
+    //change lowercase to upper
+    for (int k = 0; k < strlen(tem); k++) {
         if (tem[k] > 96)
             tem[k] -= 32;
     }
-    strncpy((node)->country, tem, strlen(tem) + 1);
-    FLUSH;
+    char country[4] = {0};
+    strncpy(country, tem, 3);
+
+    //get bib number
     bool rep;
     do {
         printf("please enter the runner bib number:");
+        FLUSH;
         fgets(ttt, MAX_LEN, stdin);
         tempp = strtol(ttt, NULL, 10);
         FLUSH;
-        rep=checkBib(*bibArray,tempp);
-        if(rep){
+        rep = checkBib(bibArray, tempp);
+        if (rep && tempp != node->bib) {
             printf("Error: Bib number already exist.\n");
         }
-    } while (tempp <= 0 || rep);
+    } while (tempp <= 0 || (rep && tempp != node->bib));
+    int bib = tempp;
 
-    (node)->bib = tempp;
-
+    //get official time
     do {
         printf("please enter the runner official time:");
-        fgets(ttt, MAX_LEN, stdin);
-        tempp = strtol(ttt, NULL, 10);
         FLUSH;
+        fgets(ttt, MAX_LEN, stdin);
+        FLUSH;
+        tempp = strtol(ttt, NULL, 10);
     } while (!tempp || tempp < 0);
-    (node)->time_official = tempp;
+    int time_official = tempp;
 
+    //get 5k time
     do {
         printf("please enter the runner 5k time:");
-        fgets(ttt, MAX_LEN, stdin);
-        tempp = strtol(ttt, NULL, 10);
         FLUSH;
+        fgets(ttt, MAX_LEN, stdin);
+        FLUSH;
+        tempp = strtol(ttt, NULL, 10);
     } while (!tempp || tempp < 0);
-    (node)->time_5k = tempp;
+    int time_5k = tempp;
 
+    //get 10k time
     do {
         printf("please enter the runner 10k time:");
-        fgets(ttt, MAX_LEN, stdin);
-        tempp = strtol(ttt, NULL, 10);
         FLUSH;
+        fgets(ttt, MAX_LEN, stdin);
+        FLUSH;
+        tempp = strtol(ttt, NULL, 10);
     } while (!tempp || tempp < 0);
-    (node)->time_10k = tempp;
+    int time_10k = tempp;
 
+    //get 15k time
     do {
         printf("please enter the runner 15k time:");
-        fgets(ttt, MAX_LEN, stdin);
-        tempp = strtol(ttt, NULL, 10);
         FLUSH;
+        fgets(ttt, MAX_LEN, stdin);
+        FLUSH;
+        tempp = strtol(ttt, NULL, 10);
     } while (!tempp || tempp < 0);
-    (node)->time_15k = tempp;
+    int time_15k = tempp;
 
-    if ((node)->prev == NULL) {
-        ((node)->next)->prev = NULL;
-        (*head) = (node)->next;
-    } else if ((node)->next == NULL) {
-        ((node)->prev)->next = NULL;
-        (*tail) = (node)->prev;
-    } else {
-
-        runner node1 = (node)->prev;
-        runner node2 = (node)->next;
-
-        //((*node)->next)->prev=(*node)->prev;
-        //((*node)->prev)->next=(*node)->next;
-        node1->next = node2;
-        node2->prev = node1;
-        //printRunner(*node);
-
-    }
-    (node)->next = NULL;
-    (node)->prev = NULL;
-
-    //insert into right position
-    runner curr = *head;
-    while ((((node)->time_official)<(curr->time_official))&&(curr->next != NULL)) {
-        curr = curr->next;
-    }
-    if (curr->next == NULL) {
-        if ((((node)->time_official)<(curr->time_official))) {
-            curr->next = (node);
-            (node)->prev = curr;
-            (*tail) = (node);
-        } else {
-            runner node1 = curr->prev;
-            runner node2 = curr;
-            (node)->prev = node1;
-            (node)->next = node2;
-            node1->next = (node);
-            node2->prev = (node);
+    //print the old information compare with new information
+    printf("\n----------  Old -----------| ---------- New ----------\n");
+    printf("Bib Number: %-14d | Bib Number: %-14d\n", node->bib, bib);
+    printf("Name: %-20s | Name: %-20s\n", node->name, name);
+    printf("Gender: %-18c | Gender: %-18c\n", node->gender, gender);
+    printf("Country: %-17s | Country: %-17s\n", node->country, country);
+    printf("5km Split Time:  %s  | 5km Split Time:  %s\n", tts(node->time_5k), tts(time_5k));
+    printf("10km Split Time: %s  | 10km Split Time: %s\n", tts(node->time_10k), tts(time_10k));
+    printf("15km Split Time: %s  | 15km Split Time: %s\n", tts(node->time_15k), tts(time_15k));
+    printf("Official Time:   %s  | Official Time:   %s\n", tts(node->time_official), tts(time_official));
+    //get comfirmation from user
+    printf("The runner's information will be updated as shown above, do you want to continue? Y/Any key to About");
+    FLUSH;
+    fgets(tem, MAX_LEN, stdin);
+    FLUSH;
+    REMOVERN(tem);
+    if (strlen(tem) == 1 && (tem[0] == 'y' || tem[0] == 'Y')) {
+        //update the node
+        free(node->name);
+        node->name = (char*) calloc(strlen(name) + 1, sizeof (char));
+        if (node->name == NULL) {
+            printf("Can not get space from heap.");
+            return;
         }
-    } else {
-        if ((node)->time_official >= (*head)->time_official) {
-            (*head)->prev = (node);
-            (node)->next = (*head);
-            (*head) = (node);
+        strncpy((node)->name, name, strlen(name));
+
+        (node)->gender = gender;
+        strncpy((node)->country, country, 4);
+        (node)->bib = bib;
+        (node)->time_official = time_official;
+        (node)->time_5k = time_5k;
+        (node)->time_10k = time_10k;
+        (node)->time_15k = time_15k;
+        //extract the node
+        if ((node)->prev == NULL) {
+            ((node)->next)->prev = NULL;
+            (*head) = (node)->next;
+        } else if ((node)->next == NULL) {
+            ((node)->prev)->next = NULL;
+            (*tail) = (node)->prev;
         } else {
-            (node)->prev = curr->prev;
-            (node)->next = curr;
-            curr->prev->next = (node);
-            curr->prev = (node);
+            runner node1 = (node)->prev;
+            runner node2 = (node)->next;
+            node1->next = node2;
+            node2->prev = node1;
         }
+        (node)->next = NULL;
+        (node)->prev = NULL;
+
+        //insert into right position
+        runner curr = *head;
+        while ((((node)->time_official)<(curr->time_official))&&(curr->next != NULL)) {
+            curr = curr->next;
+        }
+        if (curr->next == NULL) {
+            if ((((node)->time_official)<(curr->time_official))) {
+                curr->next = (node);
+                (node)->prev = curr;
+                (*tail) = (node);
+            } else {
+                runner node1 = curr->prev;
+                runner node2 = curr;
+                (node)->prev = node1;
+                (node)->next = node2;
+                node1->next = (node);
+                node2->prev = (node);
+            }
+        } else {
+            if ((node)->time_official >= (*head)->time_official) {
+                (*head)->prev = (node);
+                (node)->next = (*head);
+                (*head) = (node);
+            } else {
+                (node)->prev = curr->prev;
+                (node)->next = curr;
+                curr->prev->next = (node);
+                curr->prev = (node);
+            }
+        }
+        printf("Update runner information successfully.\n");
+    }else{
+        printf("Update aborted.\n");
     }
-    /*printf("\n----------Detail----------\n");
-    printf("Bib Number: %d\n", current->bib);
-    printf("Name: %s\n", current->name);
-    printf("Gender: %c\n", current->gender);
-    printf("Country: %s\n", current->country);
-    printf("5km Split Time:  %s\n", tts(current->time_5k));
-    printf("10km Split Time: %s\n", tts(current->time_10k));
-    printf("15km Split Time: %s\n", tts(current->time_15k));
-    printf("Official Time:   %s\n", tts(current->time_official));*/
-    printf("Update runner information successfully.\n");
 }
 
 void delete(runner current, runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
