@@ -735,7 +735,7 @@ void edit(runner node, runner* head, runner* tail, runner* bibArray) {
     printf("15km Split Time: %s  | 15km Split Time: %s\n", tts(node->time_15k), tts2(time_15k));
     printf("Official Time:   %s  | Official Time:   %s\n", tts(node->time_official), tts2(time_official));
     //get comfirmation from user
-    printf("The runner's information will be updated as shown above, do you want to continue? Y/Any key to About");
+    printf("The runner's information will be updated as shown above, do you want to continue? Y/Any key to Abort");
     FLUSH;
     fgets(tem, MAX_LEN, stdin);
     REMOVERN(tem);
