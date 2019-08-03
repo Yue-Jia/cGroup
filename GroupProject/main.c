@@ -30,12 +30,12 @@ typedef struct hashTableNode {
     struct hashTableNode* next;
 } htNodeType, *htNode;
 
-void readFile(runner*, runner*, int*);
+void readFile(runner*, runner*);
 void print(runner);
 void printBibArray(runner*);
 void printRunner(runner);
 char* tts(int);
-runner* refreshBibArray(runner, int);
+runner* refreshBibArray(runner);
 int searchBibIndex(runner*, int);
 bool checkBib(runner*, int);
 runner searchBib(runner*, int);
@@ -44,7 +44,7 @@ unsigned int hashFunction(unsigned int);
 void htInsert(htNode*, char*, runner);
 unsigned int keyToInt(char*);
 runner searchName(htNode*, char*);
-void delete(runner*, runner*, runner*, htNode*, runner*, int);
+void delete(runner, runner*, runner*, htNode**, runner**);
 void free_nameTable(htNode*);
 void free_memory(runner, runner*, htNode*);
 void writeFile(runner);
@@ -63,11 +63,11 @@ int main() {
     // Must be updated after INSERT or DELETE operation!
 
     // Read runners data from file and place them into double linked list. 
-    readFile(&head, &tail, &size);
+    readFile(&head, &tail);
 
 
     //before refresh, remember to free the memory
-    runner* bibArray = refreshBibArray(head, size);
+    runner* bibArray = refreshBibArray(head);
     //search bib, print detail
     //searchBib(bibArray,141);
 
@@ -78,7 +78,7 @@ int main() {
 
     //Command Line Interface
     while (true) {
-        printf("----------Main Menu----------\n");
+        printf("\n----------Main Menu----------\n");
         printf("|Q| Quit |B| List by Bib ASC |O| List by Official Time ASC\n");
         printf("|S| Search by Bib |N| Search by Name\n");
         printf(">");
@@ -97,7 +97,7 @@ int main() {
         } else if (userInput[0] == 'n' || userInput[0] == 'N') {
             //Search by Name
             while (true) {
-                printf("----------Search by Name----------\n");
+                printf("\n----------Search by Name----------\n");
                 printf("|Q| Quit\n");
                 printf("Please enter the runner name:");
                 fgets(userInput, MAX_LEN, stdin);
@@ -122,8 +122,7 @@ int main() {
                                 printRunner(temp);
                             } else if (userInput[0] == 'd' || userInput[0] == 'D') {
                                 //invoke delete here
-                                delete(&temp, &head, &tail, nameTable, bibArray, size);
-                                
+                                delete(temp, &head, &tail, &nameTable, &bibArray);
                                 break;
                             }
                         }
@@ -133,7 +132,7 @@ int main() {
         } else if (userInput[0] == 's' || userInput[0] == 'S') {
             //Search by Bib
             while (true) {
-                printf("----------Search by Bib----------\n");
+                printf("\n----------Search by Bib----------\n");
                 printf("|Q| Quit\n");
                 printf("Please enter the bib number:");
                 fgets(userInput, MAX_LEN, stdin);
@@ -163,8 +162,7 @@ int main() {
                                     printRunner(temp);
                                 } else if (userInput[0] == 'd' || userInput[0] == 'D') {
                                     //invoke delete here
-                                    delete(&temp, &head, &tail, nameTable, bibArray, size );
-                                    
+                                    delete(temp, &head, &tail, &nameTable, &bibArray);
                                     break;
                                 }
                             }
@@ -183,7 +181,7 @@ int main() {
 
 void writeFile(runner head) {
     FILE *fp;
-    fp = fopen("data2.txt", "w");
+    fp = fopen("data.txt", "w");
     if (fp == NULL) {
         printf("Error reading file");
         return;
@@ -196,7 +194,7 @@ void writeFile(runner head) {
     fclose(fp);
 }
 
-void readFile(runner* head, runner* tail, int* count) {
+void readFile(runner* head, runner* tail) {
     FILE *fp;
     fp = fopen("data.txt", "r");
     if (fp == NULL) {
@@ -242,8 +240,8 @@ void readFile(runner* head, runner* tail, int* count) {
                 //next
                 node->next = NULL;
                 node->prev = NULL;
-                *count = *count + 1;
-                if (*count == 1) {
+                size++;
+                if (size == 1) {
                     *head = node;
                     *tail = node;
                 } else {
@@ -254,7 +252,7 @@ void readFile(runner* head, runner* tail, int* count) {
             }
         }
     }
-    printf("%d records loaded.\n", *count);
+    printf("%d records loaded.\n", size);
     fclose(fp);
 }
 
@@ -301,11 +299,7 @@ runner searchBib(runner* bibArray, int bib) {
 htNode* refreshNameHashTable(runner head) {
     runner current = head;
     //allocate memory
-    htNode* nameTable = (htNode*) malloc(TABLESIZE * sizeof (htNode));
-    //clean table
-    for (int i = 0; i < TABLESIZE; i++) {
-        nameTable[i] = NULL;
-    }
+    htNode* nameTable = (htNode*) calloc(TABLESIZE, sizeof (htNode));
     //insert data into table
     while (current != NULL) {
         htInsert(nameTable, current->name, current);
@@ -331,7 +325,7 @@ unsigned int keyToInt(char* key) {
 void htInsert(htNode* nameTable, char* key, runner r) {
     int index = hashFunction(keyToInt(key));
     htNode temp = nameTable[index];
-    nameTable[index] = (htNode) malloc(sizeof (htNodeType));
+    nameTable[index] = (htNode) calloc(1, sizeof (htNodeType));
     if (nameTable[index] != NULL) {
         (nameTable[index])->ptr = r;
         (nameTable[index])->next = temp;
@@ -395,7 +389,7 @@ void printBibArray(runner* bibArray) {
 }
 
 void printRunner(runner current) {
-    printf("----------Detail----------\n");
+    printf("\n----------Detail----------\n");
     printf("Bib Number: %d\n", current->bib);
     printf("Name: %s\n", current->name);
     printf("Gender: %c\n", current->gender);
@@ -433,7 +427,7 @@ void QuickSort(runner* a, int low, int high) {
     }
 }
 
-runner* refreshBibArray(runner head, int size) {
+runner* refreshBibArray(runner head) {
     runner current = head;
     runner* bibArray = (runner*) malloc(size * sizeof (runner));
     for (int i = 0; i < size; i++) {
@@ -446,7 +440,8 @@ runner* refreshBibArray(runner head, int size) {
 }
 
 void add(runner* head, runner* tail) {
-    char*tem = (char*) calloc(MAX_LEN, sizeof (char));
+    char tem[MAX_LEN];
+    bool rep;
     int tempp;
     char ttt[MAX_LEN];
     runner tempr = (runner) malloc(sizeof (runnerType));
@@ -455,38 +450,78 @@ void add(runner* head, runner* tail) {
         return;
     }
     tempr->time_10k = tempr->time_15k = tempr->time_5k = 0;
-    printf("Please enter the runner name:");
+    printf("please enter the runner name:");
     fgets(tem, MAX_LEN, stdin);
     REMOVERN(tem);
+    tempr->name = (char*) calloc(strlen(tem) + 1, sizeof (char));
+    if (tempr->name == NULL) {
+        printf("Can not get space from heap.");
+        return;
+    }
     strncpy(tempr->name, tem, strlen(tem));
     FLUSH;
-    printf("Please enter the runner gender:");
+    printf("please enter the runner gender:");
     fgets(tem, MAX_LEN, stdin);
     REMOVERN(tem);
+    if (tem[0] > 96) {//change lowercase to upper
+        tem[0] -= 32;
+    }
     tempr->gender = tem[0];
     FLUSH;
-    printf("Please enter the runner country:");
+    printf("please enter the runner country:");
     fgets(tem, MAX_LEN, stdin);
     REMOVERN(tem);
     tem[3] = '\0';
+    for (int k = 0; k < strlen(tem); k++) {//change lowercase to upper
+        if (tem[k] > 96)
+            tem[k] -= 32;
+    }
     strncpy(tempr->country, tem, strlen(tem) + 1);
     FLUSH;
     do {
-        printf("Please enter the runner bib number:");
+        printf("please enter the runner bib number:");
         fgets(ttt, MAX_LEN, stdin);
         tempp = strtol(ttt, NULL, 10);
         FLUSH;
-    } while (!tempp);
+        /*
+        rep=checkBib(bibArray,tempp);
+        if(rep)
+        printf("Bib number already exist.");*/
+    } while (!tempp || tempp < 0); //||rep);
     tempr->bib = tempp;
-    //scanf("%d",&(tempr->bib)); 
+
     do {
-        printf("Please enter the runner official time:");
-        //scanf("%d",&(tempr->time_official));
+        printf("please enter the runner official time:");
         fgets(ttt, MAX_LEN, stdin);
         tempp = strtol(ttt, NULL, 10);
         FLUSH;
-    } while (!tempp);
+    } while (!tempp || tempp < 0);
     tempr->time_official = tempp;
+
+    do {
+        printf("please enter the runner 5k time:");
+        fgets(ttt, MAX_LEN, stdin);
+        tempp = strtol(ttt, NULL, 10);
+        FLUSH;
+    } while (!tempp || tempp < 0);
+    tempr->time_5k = tempp;
+
+    do {
+        printf("please enter the runner 10k time:");
+        fgets(ttt, MAX_LEN, stdin);
+        tempp = strtol(ttt, NULL, 10);
+        FLUSH;
+    } while (!tempp || tempp < 0);
+    tempr->time_10k = tempp;
+
+    do {
+        printf("please enter the runner 15k time:");
+        fgets(ttt, MAX_LEN, stdin);
+        tempp = strtol(ttt, NULL, 10);
+        FLUSH;
+    } while (!tempp || tempp < 0);
+    tempr->time_15k = tempp;
+
     tempr->next = NULL;
     tempr->prev = NULL;
     //insert into right position
@@ -517,43 +552,172 @@ void add(runner* head, runner* tail) {
             curr->prev = tempr;
         }
     }
-
+    size++;
 }
 
-void edit() {
+void edit(runner node, runner* head, runner* tail) {
+    char tem[MAX_LEN];
+    int tempp;
+    char ttt[MAX_LEN];
+    printf("Edit please enter the runner name:");
+    fgets(tem, MAX_LEN, stdin);
+    REMOVERN(tem);
+    free(node->name);
+    node->name = (char*) calloc(strlen(tem) + 1, sizeof (char));
+    if (node->name == NULL) {
+        printf("Can not get space from heap.");
+        return;
+    }
+    //memset(node,0,strlen(tem)+1);//free node->name , then calloc
+    strncpy((node)->name, tem, strlen(tem));
+    FLUSH;
+    printf("please enter the runner gender:");
+    fgets(tem, MAX_LEN, stdin);
+    REMOVERN(tem);
+    if (tem[0] > 96) {//change lowercase to upper
+        tem[0] -= 32;
+    }
+    (node)->gender = tem[0];
+    FLUSH;
+    printf("please enter the runner country:");
+    fgets(tem, MAX_LEN, stdin);
+    REMOVERN(tem);
+    tem[3] = '\0';
+    for (int k = 0; k < strlen(tem); k++) {//change lowercase to upper
+        if (tem[k] > 96)
+            tem[k] -= 32;
+    }
+    strncpy((node)->country, tem, strlen(tem) + 1);
+    FLUSH;
+    do {
+        printf("please enter the runner bib number:");
+        fgets(ttt, MAX_LEN, stdin);
+        tempp = strtol(ttt, NULL, 10);
+        FLUSH;
+        /*
+        rep=checkBib(bibArray,tempp);
+        if(rep)
+        printf("Bib number already exist.");*/
+    } while (!tempp || tempp < 0); //||rep);
 
+    (node)->bib = tempp;
+
+    do {
+        printf("please enter the runner official time:");
+        fgets(ttt, MAX_LEN, stdin);
+        tempp = strtol(ttt, NULL, 10);
+        FLUSH;
+    } while (!tempp || tempp < 0);
+    (node)->time_official = tempp;
+
+    do {
+        printf("please enter the runner 5k time:");
+        fgets(ttt, MAX_LEN, stdin);
+        tempp = strtol(ttt, NULL, 10);
+        FLUSH;
+    } while (!tempp || tempp < 0);
+    (node)->time_5k = tempp;
+
+    do {
+        printf("please enter the runner 10k time:");
+        fgets(ttt, MAX_LEN, stdin);
+        tempp = strtol(ttt, NULL, 10);
+        FLUSH;
+    } while (!tempp || tempp < 0);
+    (node)->time_10k = tempp;
+
+    do {
+        printf("please enter the runner 15k time:");
+        fgets(ttt, MAX_LEN, stdin);
+        tempp = strtol(ttt, NULL, 10);
+        FLUSH;
+    } while (!tempp || tempp < 0);
+    (node)->time_15k = tempp;
+
+    if ((node)->prev == NULL) {
+        ((node)->next)->prev = NULL;
+        (*head) = (node)->next;
+    } else if ((node)->next == NULL) {
+        ((node)->prev)->next = NULL;
+        (*tail) = (node)->prev;
+    } else {
+
+        runner node1 = (node)->prev;
+        runner node2 = (node)->next;
+
+        //((*node)->next)->prev=(*node)->prev;
+        //((*node)->prev)->next=(*node)->next;
+        node1->next = node2;
+        node2->prev = node1;
+        //printRunner(*node);
+
+    }
+    (node)->next = NULL;
+    (node)->prev = NULL;
+
+    //insert into right position
+    runner curr = *head;
+    while ((((node)->time_official)<(curr->time_official))&&(curr->next != NULL)) {
+        curr = curr->next;
+    }
+    if (curr->next == NULL) {
+        if ((((node)->time_official)<(curr->time_official))) {
+            curr->next = (node);
+            (node)->prev = curr;
+            (*tail) = (node);
+        } else {
+            runner node1 = curr->prev;
+            runner node2 = curr;
+            (node)->prev = node1;
+            (node)->next = node2;
+            node1->next = (node);
+            node2->prev = (node);
+        }
+    } else {
+        if ((node)->time_official >= (*head)->time_official) {
+            (*head)->prev = (node);
+            (node)->next = (*head);
+            (*head) = (node);
+        } else {
+            (node)->prev = curr->prev;
+            (node)->next = curr;
+            curr->prev->next = (node);
+            curr->prev = (node);
+        }
+    }
 }
 
-void delete(runner* current, runner* head, runner* tail, htNode* nameTable, runner* bibArray, int size) {
+void delete(runner current, runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
 
     //check if the node is at the end of array
-    if ((*current)->next == NULL) {
-        (*tail) = (*current)->prev;
+    if (current->next == NULL) {
+        (*tail) = current->prev;
+        (*tail)->next = NULL;
     }
 
     //check if the node is at the front of the array
-    if ((*current)->prev == NULL) {
-        (*head) = (*current)->next;
-
+    if (current->prev == NULL) {
+        (*head) = current->next;
+        (*head)->prev = NULL;
         //if node is not the end or front of the array, change the next pointer of 
         //previous node to next of current node, and change the previous pointer of 
         //the next node to previous of current node.
     } else {
-        (*current)->prev->next = (*current)->next;
-        (*current)->next->prev = (*current)->prev;
+        (current->prev)->next = current->next;
+        (current->next)->prev = current->prev;
     }
 
     //free the current node;
-    free(*current);
+    free(current);
     size--;
     printf("Delete successfully\n");
-    
+
     //update bibArray
-    free(bibArray);
-    bibArray = refreshBibArray((*head), size);
-                                    //update nameTable
-    free_nameTable(nameTable);
-    nameTable = refreshNameHashTable((*head));
+    free(*bibArray);
+    *bibArray = refreshBibArray(*head);
+    //update nameTable
+    free_nameTable(*nameTable);
+    *nameTable = refreshNameHashTable((*head));
 }
 
 void free_nameTable(htNode* nameTable) {
