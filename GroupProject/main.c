@@ -35,6 +35,7 @@ void print(runner);
 void printBibArray(runner*);
 void printRunner(runner);
 char* tts(int);
+char* tts2(int);
 runner* refreshBibArray(runner);
 int searchBibIndex(runner*, int);
 bool checkBib(runner*, int);
@@ -188,8 +189,7 @@ int main() {
         }
     }
 
-    //print(head);
-    //writeFile(head);
+    writeFile(head);
     free_memory(head, bibArray, nameTable);
     return 0;
 }
@@ -207,6 +207,7 @@ void writeFile(runner head) {
         current = current->next;
     }
     fclose(fp);
+    printf("Data saved.\n");
 }
 
 void readFile(runner* head, runner* tail) {
@@ -369,6 +370,17 @@ runner searchName(htNode* nameTable, char* key) {
 }
 
 char* tts(int n) {
+    static char str[9] = {0};
+    snprintf(str, 9, "%2d:%2d:%2d", n / 3600, (n % 3600) / 60, n % 60);
+    for (int i = 1; i < 8; i++) {
+        if (str[i] == ' ') {
+            str[i] = '0';
+        }
+    }
+    return str;
+}
+
+char* tts2(int n) {
     static char str[9] = {0};
     snprintf(str, 9, "%2d:%2d:%2d", n / 3600, (n % 3600) / 60, n % 60);
     for (int i = 1; i < 8; i++) {
@@ -701,10 +713,10 @@ void edit(runner node, runner* head, runner* tail, runner* bibArray) {
     printf("Name: %-20s | Name: %-20s\n", node->name, name);
     printf("Gender: %-18c | Gender: %-18c\n", node->gender, gender);
     printf("Country: %-17s | Country: %-17s\n", node->country, country);
-    printf("5km Split Time:  %s  | 5km Split Time:  %s\n", tts(node->time_5k), tts(time_5k));
-    printf("10km Split Time: %s  | 10km Split Time: %s\n", tts(node->time_10k), tts(time_10k));
-    printf("15km Split Time: %s  | 15km Split Time: %s\n", tts(node->time_15k), tts(time_15k));
-    printf("Official Time:   %s  | Official Time:   %s\n", tts(node->time_official), tts(time_official));
+    printf("5km Split Time:  %s  | 5km Split Time:  %s\n", tts(node->time_5k), tts2(time_5k));
+    printf("10km Split Time: %s  | 10km Split Time: %s\n", tts(node->time_10k), tts2(time_10k));
+    printf("15km Split Time: %s  | 15km Split Time: %s\n", tts(node->time_15k), tts2(time_15k));
+    printf("Official Time:   %s  | Official Time:   %s\n", tts(node->time_official), tts2(time_official));
     //get comfirmation from user
     printf("The runner's information will be updated as shown above, do you want to continue? Y/Any key to About");
     FLUSH;
