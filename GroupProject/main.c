@@ -417,10 +417,7 @@ char* tts2(int n) {
 void print(runner head) {
     runner current = head;
     while (current != NULL) {
-        printf("%6d %-30s%2c%4s%9s", current->bib, current->name, current->gender, current->country, tts(current->time_5k));
-        printf("%9s", tts(current->time_10k));
-        printf("%9s", tts(current->time_15k));
-        printf("%9s\n", tts(current->time_official));
+        printf("%6d %-30s%2c%4s%9s\n", current->bib, current->name, current->gender, current->country, tts(current->time_official));
         if (head->prev == NULL) {
             current = current->next;
         } else {
@@ -431,10 +428,7 @@ void print(runner head) {
 
 void printBibArray(runner* bibArray) {
     for (int i = 0; i < size; i++) {
-        printf("%6d %-30s%2c%4s%9s", bibArray[i]->bib, bibArray[i]->name, bibArray[i]->gender, bibArray[i]->country, tts(bibArray[i]->time_5k));
-        printf("%9s", tts(bibArray[i]->time_10k));
-        printf("%9s", tts(bibArray[i]->time_15k));
-        printf("%9s\n", tts(bibArray[i]->time_official));
+        printf("%6d %-30s%2c%4s%9s\n", bibArray[i]->bib, bibArray[i]->name, bibArray[i]->gender, bibArray[i]->country, tts(bibArray[i]->time_official));
     }
 }
 
