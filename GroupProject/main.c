@@ -44,6 +44,8 @@ unsigned int hashFunction(unsigned int);
 void htInsert(htNode*, char*, runner);
 unsigned int keyToInt(char*);
 runner searchName(htNode*, char*);
+void add(runner*, runner*, htNode**, runner**);
+void edit(runner, runner*, runner*, runner*);
 void delete(runner, runner*, runner*, htNode**, runner**);
 void free_nameTable(htNode*);
 void free_memory(runner, runner*, htNode*);
@@ -80,7 +82,7 @@ int main() {
     while (true) {
         printf("\n----------Main Menu----------\n");
         printf("|Q| Quit |B| List by Bib ASC |O| List by Official Time ASC\n");
-        printf("|S| Search by Bib |N| Search by Name\n");
+        printf("|S| Search by Bib |N| Search by Name |I| Insert Runner\n");
         printf(">");
         char userInput[MAX_LEN] = {0};
         fgets(userInput, MAX_LEN, stdin);
@@ -119,6 +121,7 @@ int main() {
                                 break;
                             } else if (userInput[0] == 'e' || userInput[0] == 'E') {
                                 //invoke edit here
+                                edit(temp, &head, &tail, bibArray);
                                 printRunner(temp);
                             } else if (userInput[0] == 'd' || userInput[0] == 'D') {
                                 //invoke delete here
@@ -159,6 +162,7 @@ int main() {
                                     break;
                                 } else if (userInput[0] == 'e' || userInput[0] == 'E') {
                                     //invoke edit here
+                                    edit(temp, &head, &tail, bibArray);
                                     printRunner(temp);
                                 } else if (userInput[0] == 'd' || userInput[0] == 'D') {
                                     //invoke delete here
@@ -170,6 +174,8 @@ int main() {
                     }
                 }
             }
+        } else if(userInput[0] == 'i' || userInput[0] == 'I'){
+            add(&head, &tail, &nameTable, &bibArray);
         }
     }
 
@@ -439,7 +445,7 @@ runner* refreshBibArray(runner head) {
     return bibArray;
 }
 
-void add(runner* head, runner* tail) {
+void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
     char tem[MAX_LEN];
     bool rep;
     int tempp;
@@ -469,6 +475,7 @@ void add(runner* head, runner* tail) {
     tempr->gender = tem[0];
     FLUSH;
     printf("please enter the runner country:");
+    memset(tem,0,4);
     fgets(tem, MAX_LEN, stdin);
     REMOVERN(tem);
     tem[3] = '\0';
@@ -483,11 +490,11 @@ void add(runner* head, runner* tail) {
         fgets(ttt, MAX_LEN, stdin);
         tempp = strtol(ttt, NULL, 10);
         FLUSH;
-        /*
-        rep=checkBib(bibArray,tempp);
-        if(rep)
-        printf("Bib number already exist.");*/
-    } while (!tempp || tempp < 0); //||rep);
+        rep=checkBib(*bibArray,tempp);
+        if(rep){
+            printf("Error: Bib number already exist.\n");
+        }
+    } while (tempp <= 0 || rep);
     tempr->bib = tempp;
 
     do {
@@ -553,9 +560,17 @@ void add(runner* head, runner* tail) {
         }
     }
     size++;
+    printf("Insert successfully.\n");
+    
+    //update bibArray
+    free(*bibArray);
+    *bibArray = refreshBibArray(*head);
+    //update nameTable
+    free_nameTable(*nameTable);
+    *nameTable = refreshNameHashTable((*head));
 }
 
-void edit(runner node, runner* head, runner* tail) {
+void edit(runner node, runner* head, runner* tail, runner* bibArray) {
     char tem[MAX_LEN];
     int tempp;
     char ttt[MAX_LEN];
@@ -580,6 +595,7 @@ void edit(runner node, runner* head, runner* tail) {
     (node)->gender = tem[0];
     FLUSH;
     printf("please enter the runner country:");
+    memset(tem,0,4);
     fgets(tem, MAX_LEN, stdin);
     REMOVERN(tem);
     tem[3] = '\0';
@@ -589,16 +605,17 @@ void edit(runner node, runner* head, runner* tail) {
     }
     strncpy((node)->country, tem, strlen(tem) + 1);
     FLUSH;
+    bool rep;
     do {
         printf("please enter the runner bib number:");
         fgets(ttt, MAX_LEN, stdin);
         tempp = strtol(ttt, NULL, 10);
         FLUSH;
-        /*
-        rep=checkBib(bibArray,tempp);
-        if(rep)
-        printf("Bib number already exist.");*/
-    } while (!tempp || tempp < 0); //||rep);
+        rep=checkBib(*bibArray,tempp);
+        if(rep){
+            printf("Error: Bib number already exist.\n");
+        }
+    } while (tempp <= 0 || rep);
 
     (node)->bib = tempp;
 
@@ -685,6 +702,16 @@ void edit(runner node, runner* head, runner* tail) {
             curr->prev = (node);
         }
     }
+    /*printf("\n----------Detail----------\n");
+    printf("Bib Number: %d\n", current->bib);
+    printf("Name: %s\n", current->name);
+    printf("Gender: %c\n", current->gender);
+    printf("Country: %s\n", current->country);
+    printf("5km Split Time:  %s\n", tts(current->time_5k));
+    printf("10km Split Time: %s\n", tts(current->time_10k));
+    printf("15km Split Time: %s\n", tts(current->time_15k));
+    printf("Official Time:   %s\n", tts(current->time_official));*/
+    printf("Update runner information successfully.\n");
 }
 
 void delete(runner current, runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
@@ -708,6 +735,7 @@ void delete(runner current, runner* head, runner* tail, htNode** nameTable, runn
     }
 
     //free the current node;
+    free(current->name);
     free(current);
     size--;
     printf("Delete successfully\n");
@@ -731,6 +759,7 @@ void free_memory(runner head, runner* bibArray, htNode* nameTable) {
     runner current = head;
     while (current != NULL) {
         head = current->next;
+        free(current->name);
         free(current);
         current = head;
     }
