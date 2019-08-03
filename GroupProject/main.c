@@ -96,7 +96,7 @@ int main() {
         } else if (userInput[0] == 'b' || userInput[0] == 'B') {
             printBibArray(bibArray);
         } else if (userInput[0] == 'o' || userInput[0] == 'O') {
-            print(tail);
+            print(head);
         } else if (userInput[0] == 'n' || userInput[0] == 'N') {
             //Search by Name
             while (true) {
@@ -261,9 +261,32 @@ void readFile(runner* head, runner* tail) {
                     *head = node;
                     *tail = node;
                 } else {
-                    node->next = *head;
-                    (*head)->prev = node;
-                    *head = node;
+                    //if the official time is smaller than head, then insert the node at the start and make it head
+                    if(node->time_official <= (*head)->time_official){
+                        node->next = (*head);
+                        (*head)->prev = node;
+                        *head = node;
+                        continue;
+                    }
+                    //if the official time is larger than tail, then insert the node at the end and make it tail
+                    else if(node->time_official >= (*tail)->time_official){
+                        (*tail)->next = node;
+                        node->prev = (*tail);
+                        *tail = node;
+                        continue;
+                    }
+                    //if the official time is in the middle
+                    else{
+                        runner current = *head;
+                        while(current->next != NULL && node->time_official > current->time_official){
+                            current = current->next;
+                        }
+                        node->prev = (current->prev);
+                        node->next = current;
+                        (current->prev)->next = node;
+                        current->prev = node;
+                    }
+                    //
                 }
             }
         }
