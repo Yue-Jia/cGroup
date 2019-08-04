@@ -596,13 +596,11 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
         node->next = (*head);
         (*head)->prev = node;
         *head = node;
-        continue;
     }        //if the official time is larger than tail, then insert the node at the end and make it tail
     else if (node->time_official >= (*tail)->time_official) {
         (*tail)->next = node;
         node->prev = (*tail);
         *tail = node;
-        continue;
     }        //if the official time is in the middle
     else {
         runner current = *head;
@@ -614,34 +612,7 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
         (current->prev)->next = node;
         current->prev = node;
     }
-    /*insert into right position
-    runner curr = *head;
-    while (((tempr->time_official)<(curr->time_official))&&(curr->next != NULL)) {
-        curr = curr->next;
-    }
-    if (curr->next == NULL) {
-        if (((tempr->time_official)<(curr->time_official))) {
-            curr->next = tempr;
-            tempr->prev = curr;
-            (*tail) = tempr;
-        } else {
-            tempr->prev = curr->prev;
-            tempr->next = curr;
-            curr->prev->next = tempr;
-            curr->prev = tempr;
-        }
-    } else {
-        if (tempr->time_official >= (*head)->time_official) {
-            (*head)->prev = tempr;
-            tempr->next = (*head);
-            (*head) = tempr;
-        } else {
-            tempr->prev = curr->prev;
-            tempr->next = curr;
-            curr->prev->next = tempr;
-            curr->prev = tempr;
-        }
-    }*/
+
     size++;
     printf("Insert successfully.\n");
 
