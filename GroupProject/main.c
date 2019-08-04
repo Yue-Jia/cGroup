@@ -491,8 +491,8 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
     char ttt[MAX_LEN];
 
     //allocate memory for new runner
-    runner tempr = (runner) malloc(sizeof (runnerType));
-    if (tempr == NULL) {
+    runner node = (runner) malloc(sizeof (runnerType));
+    if (node == NULL) {
         printf("Can not get space from heap for new runner node.");
         return;
     }
@@ -504,12 +504,12 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
         fgets(tem, MAX_LEN, stdin);
         REMOVERN(tem);
     } while (strlen(tem) == 0);
-    tempr->name = (char*) calloc(strlen(tem) + 1, sizeof (char));
-    if (tempr->name == NULL) {
+    node->name = (char*) calloc(strlen(tem) + 1, sizeof (char));
+    if (node->name == NULL) {
         printf("Can not get space from heap.");
         return;
     }
-    strncpy(tempr->name, tem, strlen(tem));
+    strncpy(node->name, tem, strlen(tem));
 
     //get gender
     do {
@@ -522,7 +522,7 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
     if (tem[0] > 96) {
         tem[0] -= 32;
     }
-    tempr->gender = tem[0];
+    node->gender = tem[0];
 
     //get country
     do {
@@ -538,7 +538,7 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
         if (tem[k] > 96)
             tem[k] -= 32;
     }
-    strncpy(tempr->country, tem, strlen(tem) + 1);
+    strncpy(node->country, tem, strlen(tem) + 1);
 
     do {
         printf("please enter the runner bib number:");
@@ -550,7 +550,7 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
             printf("Error: Bib number already exist.\n");
         }
     } while (tempp <= 0 || rep);
-    tempr->bib = tempp;
+    node->bib = tempp;
 
     do {
         printf("please enter the runner official time:");
@@ -559,7 +559,7 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
         tempp = strtol(ttt, NULL, 10);
 
     } while (!tempp || tempp < 0);
-    tempr->time_official = tempp;
+    node->time_official = tempp;
 
     do {
         printf("please enter the runner 5k time:");
@@ -568,7 +568,7 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
         tempp = strtol(ttt, NULL, 10);
 
     } while (!tempp || tempp < 0);
-    tempr->time_5k = tempp;
+    node->time_5k = tempp;
 
     do {
         printf("please enter the runner 10k time:");
@@ -577,7 +577,7 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
         tempp = strtol(ttt, NULL, 10);
 
     } while (!tempp || tempp < 0);
-    tempr->time_10k = tempp;
+    node->time_10k = tempp;
 
     do {
         printf("please enter the runner 15k time:");
@@ -586,11 +586,35 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
         tempp = strtol(ttt, NULL, 10);
 
     } while (!tempp || tempp < 0);
-    tempr->time_15k = tempp;
-
-    tempr->next = NULL;
-    tempr->prev = NULL;
+    node->time_15k = tempp;
+    node->next = NULL;
+    node->prev = NULL;
+    
     //insert into right position
+    //if the official time is smaller than head, then insert the node at the start and make it head
+    if (node->time_official <= (*head)->time_official) {
+        node->next = (*head);
+        (*head)->prev = node;
+        *head = node;
+        continue;
+    }        //if the official time is larger than tail, then insert the node at the end and make it tail
+    else if (node->time_official >= (*tail)->time_official) {
+        (*tail)->next = node;
+        node->prev = (*tail);
+        *tail = node;
+        continue;
+    }        //if the official time is in the middle
+    else {
+        runner current = *head;
+        while (current->next != NULL && node->time_official > current->time_official) {
+            current = current->next;
+        }
+        node->prev = (current->prev);
+        node->next = current;
+        (current->prev)->next = node;
+        current->prev = node;
+    }
+    /*insert into right position
     runner curr = *head;
     while (((tempr->time_official)<(curr->time_official))&&(curr->next != NULL)) {
         curr = curr->next;
@@ -617,7 +641,7 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
             curr->prev->next = tempr;
             curr->prev = tempr;
         }
-    }
+    }*/
     size++;
     printf("Insert successfully.\n");
 
