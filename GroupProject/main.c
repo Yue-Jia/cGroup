@@ -553,7 +553,7 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
     node->bib = tempp;
 
     do {
-        printf("please enter the runner official time:");
+        printf("please enter the runner official time in seconds:");
         FLUSH;
         fgets(ttt, MAX_LEN, stdin);
         tempp = strtol(ttt, NULL, 10);
@@ -562,7 +562,7 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
     node->time_official = tempp;
 
     do {
-        printf("please enter the runner 5k time:");
+        printf("please enter the runner 5k time in seconds:");
         FLUSH;
         fgets(ttt, MAX_LEN, stdin);
         tempp = strtol(ttt, NULL, 10);
@@ -571,7 +571,7 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
     node->time_5k = tempp;
 
     do {
-        printf("please enter the runner 10k time:");
+        printf("please enter the runner 10k time in seconds:");
         FLUSH;
         fgets(ttt, MAX_LEN, stdin);
         tempp = strtol(ttt, NULL, 10);
@@ -580,7 +580,7 @@ void add(runner* head, runner* tail, htNode** nameTable, runner** bibArray) {
     node->time_10k = tempp;
 
     do {
-        printf("please enter the runner 15k time:");
+        printf("please enter the runner 15k time in seconds:");
         FLUSH;
         fgets(ttt, MAX_LEN, stdin);
         tempp = strtol(ttt, NULL, 10);
@@ -685,7 +685,7 @@ void edit(runner node, runner* head, runner* tail, runner* bibArray) {
 
     //get official time
     do {
-        printf("please enter the runner official time:");
+        printf("please enter the runner official time in seconds:");
         FLUSH;
         fgets(ttt, MAX_LEN, stdin);
         tempp = strtol(ttt, NULL, 10);
@@ -694,7 +694,7 @@ void edit(runner node, runner* head, runner* tail, runner* bibArray) {
 
     //get 5k time
     do {
-        printf("please enter the runner 5k time:");
+        printf("please enter the runner 5k time in seconds:");
         FLUSH;
         fgets(ttt, MAX_LEN, stdin);
         tempp = strtol(ttt, NULL, 10);
@@ -703,7 +703,7 @@ void edit(runner node, runner* head, runner* tail, runner* bibArray) {
 
     //get 10k time
     do {
-        printf("please enter the runner 10k time:");
+        printf("please enter the runner 10k time in seconds:");
         FLUSH;
         fgets(ttt, MAX_LEN, stdin);
         tempp = strtol(ttt, NULL, 10);
@@ -712,7 +712,7 @@ void edit(runner node, runner* head, runner* tail, runner* bibArray) {
 
     //get 15k time
     do {
-        printf("please enter the runner 15k time:");
+        printf("please enter the runner 15k time in seconds:");
         FLUSH;
         fgets(ttt, MAX_LEN, stdin);
         tempp = strtol(ttt, NULL, 10);
