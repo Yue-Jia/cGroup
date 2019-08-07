@@ -81,9 +81,16 @@ int main() {
 
     //Command Line Interface
     while (true) {
-        printf("\n----------Main Menu----------\n");
-        printf("|Q| Quit |B| List by Bib ASC |O| List by Official Time ASC\n");
-        printf("|S| Search by Bib |N| Search by Name |I| Insert Runner\n");
+        printf("\n--------------------Main Menu-----------------------\n");
+        printf("|            |B| List by Bib ASC                   |\n");
+        printf("|            |O| List by Official Time ASC         |\n");
+        printf("|            |S| Search by Bib                     |\n");
+        printf("|            |N| Search by Name                    |\n");
+        printf("|            |I| Insert Runner                     |\n");
+        printf("|            |Q| Quit                              |\n");
+        printf("----------------------------------------------------\n");
+        //printf("|Q| Quit |B| List by Bib ASC |O| List by Official Time ASC\n");
+        //printf("|S| Search by Bib |N| Search by Name |I| Insert Runner\n");
         printf(">");
         char userInput[MAX_LEN] = {0};
         fgets(userInput, MAX_LEN, stdin);
@@ -100,8 +107,8 @@ int main() {
         } else if (userInput[0] == 'n' || userInput[0] == 'N') {
             //Search by Name
             while (true) {
-                printf("\n----------Search by Name----------\n");
-                printf("|Q| Quit\n");
+                printf("\n-----------------Search by Name---------------\n");
+                printf("|Q| Quit\n\n");
                 printf("Please enter the runner name:");
                 fgets(userInput, MAX_LEN, stdin);
                 FLUSH;
@@ -416,19 +423,36 @@ char* tts2(int n) {
 
 void print(runner head) {
     runner current = head;
+    int pauseCount = -1;
     while (current != NULL) {
+        pauseCount++;
         printf("%6d %-30s%2c%4s%9s\n", current->bib, current->name, current->gender, current->country, tts(current->time_official));
         if (head->prev == NULL) {
             current = current->next;
         } else {
             current = current->prev;
         }
+        
+        if(pauseCount == 1000) {
+            printf("Press Enter to Continue...\n");
+            getchar();
+            pauseCount = -1;
+        };
     }
 }
 
 void printBibArray(runner* bibArray) {
+    //printf("Bib Number  Runner's Name                   Gender        Country       Official Time");
+    //printf("-------------------------------------------------------------------------------------");
+    int pauseCount = -1;
     for (int i = 0; i < size; i++) {
-        printf("%6d %-30s%2c%4s%9s\n", bibArray[i]->bib, bibArray[i]->name, bibArray[i]->gender, bibArray[i]->country, tts(bibArray[i]->time_official));
+        pauseCount++;
+        printf("%6d %-30s%4c%6s%9s\n", bibArray[i]->bib, bibArray[i]->name, bibArray[i]->gender, bibArray[i]->country, tts(bibArray[i]->time_official));
+        if(pauseCount == 1000) {
+            printf("Press Enter to Continue...\n");
+            getchar();
+            pauseCount = -1;
+        };
     }
 }
 
