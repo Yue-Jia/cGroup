@@ -120,7 +120,7 @@ int main() {
                     if (temp != NULL) {
                         printRunner(temp);
                         while (true) {
-                            printf("----------------------------------");
+                           
                             printf("|Q| Quit |E| Edit |D| Delete\n");
                             printf(">");
                             fgets(userInput, MAX_LEN, stdin);
