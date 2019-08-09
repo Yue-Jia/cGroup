@@ -173,7 +173,7 @@ int main() {
                                     edit(temp, &head, &tail, bibArray);
                                     printRunner(temp);
                                 } else if (userInput[0] == 'd' || userInput[0] == 'D') {
-                                    printf("Are you sure you want to delete runner %s? Y/Any key to Abort", temp->name);
+                                    printf("Are you sure you want to delete runner %s? Y/Any key to Abort ", temp->name);
                                     FLUSH;
                                     fgets(userInput, MAX_LEN, stdin);
                                     FLUSH;
@@ -424,6 +424,7 @@ char* tts2(int n) {
 void print(runner head) {
     runner current = head;
     int pauseCount = -1;
+    char c;
     while (current != NULL) {
         pauseCount++;
         printf("%6d %-30s%2c%4s%9s\n", current->bib, current->name, current->gender, current->country, tts(current->time_official));
@@ -434,8 +435,13 @@ void print(runner head) {
         }
         
         if(pauseCount == 1000) {
-            printf("Press Enter to Continue...\n");
-            getchar();
+            
+            printf("Press Enter to Continue or Q back to Main Menu...\n");
+            c = getchar();
+            FLUSH;
+            if(c == 'q' || c =='Q') {
+                break;
+            };
             pauseCount = -1;
         };
     }
@@ -445,12 +451,18 @@ void printBibArray(runner* bibArray) {
     //printf("Bib Number  Runner's Name                   Gender        Country       Official Time");
     //printf("-------------------------------------------------------------------------------------");
     int pauseCount = -1;
+    char c;
     for (int i = 0; i < size; i++) {
         pauseCount++;
         printf("%6d %-30s%4c%6s%9s\n", bibArray[i]->bib, bibArray[i]->name, bibArray[i]->gender, bibArray[i]->country, tts(bibArray[i]->time_official));
         if(pauseCount == 1000) {
-            printf("Press Enter to Continue...\n");
-            getchar();
+            printf("Press Enter to Continue or Q back to Main Menu...\n");
+             c = getchar();
+             FLUSH;
+            
+            if(c == 'q' || c =='Q') {
+                break;
+            };
             pauseCount = -1;
         };
     }
