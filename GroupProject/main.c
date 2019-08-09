@@ -107,7 +107,7 @@ int main() {
         } else if (userInput[0] == 'n' || userInput[0] == 'N') {
             //Search by Name
             while (true) {
-                printf("\n-----------------Search by Name---------------\n");
+                printf("\n-----------------Search by Name-----------------\n");
                 printf("|Q| Quit\n\n");
                 printf("Please enter the runner name:");
                 fgets(userInput, MAX_LEN, stdin);
@@ -120,6 +120,7 @@ int main() {
                     if (temp != NULL) {
                         printRunner(temp);
                         while (true) {
+                            printf("----------------------------------");
                             printf("|Q| Quit |E| Edit |D| Delete\n");
                             printf(">");
                             fgets(userInput, MAX_LEN, stdin);
@@ -133,8 +134,18 @@ int main() {
                                 printRunner(temp);
                             } else if (userInput[0] == 'd' || userInput[0] == 'D') {
                                 //invoke delete here
-                                delete(temp, &head, &tail, &nameTable, &bibArray);
-                                break;
+                               printf("Are you sure you want to delete runner %s? Y/Any key to Abort ", temp->name);
+                                    FLUSH;
+                                    fgets(userInput, MAX_LEN, stdin);
+                                    FLUSH;
+                                    REMOVERN(userInput);
+                                    if (strlen(userInput) == 1 && (userInput[0] == 'y' || userInput[0] == 'Y')) {
+                                        //invoke delete here
+                                        delete(temp, &head, &tail, &nameTable, &bibArray);
+                                        break;
+                                    } else {
+                                        printRunner(temp);
+                                    }
                             }
                         }
                     }
@@ -143,7 +154,7 @@ int main() {
         } else if (userInput[0] == 's' || userInput[0] == 'S') {
             //Search by Bib
             while (true) {
-                printf("\n----------Search by Bib----------\n");
+                printf("\n-----------------Search by Bib-----------------\n");
                 printf("|Q| Quit\n");
                 printf("Please enter the bib number:");
                 fgets(userInput, MAX_LEN, stdin);
@@ -448,8 +459,7 @@ void print(runner head) {
 }
 
 void printBibArray(runner* bibArray) {
-    //printf("Bib Number  Runner's Name                   Gender        Country       Official Time");
-    //printf("-------------------------------------------------------------------------------------");
+
     int pauseCount = -1;
     char c;
     for (int i = 0; i < size; i++) {
@@ -469,15 +479,16 @@ void printBibArray(runner* bibArray) {
 }
 
 void printRunner(runner current) {
-    printf("\n----------Detail----------\n");
-    printf("Bib Number: %d\n", current->bib);
-    printf("Name: %s\n", current->name);
-    printf("Gender: %c\n", current->gender);
-    printf("Country: %s\n", current->country);
-    printf("5km Split Time:  %s\n", tts(current->time_5k));
-    printf("10km Split Time: %s\n", tts(current->time_10k));
-    printf("15km Split Time: %s\n", tts(current->time_15k));
-    printf("Official Time:   %s\n", tts(current->time_official));
+    printf("\n-----------------Detail-----------------\n");
+    printf("    Bib Number: %d\n", current->bib);
+    printf("    Name: %s\n", current->name);
+    printf("    Gender: %c\n", current->gender);
+    printf("    Country: %s\n", current->country);
+    printf("    5km Split Time:  %s\n", tts(current->time_5k));
+    printf("    10km Split Time: %s\n", tts(current->time_10k));
+    printf("    15km Split Time: %s\n", tts(current->time_15k));
+    printf("    Official Time:   %s\n", tts(current->time_official));
+    printf("-----------------------------------------\n");
 }
 
 void swap(runner* a, runner* b) {
